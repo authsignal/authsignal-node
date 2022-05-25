@@ -7,7 +7,7 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
-  "keywords": [ "authsignal", "mfa", "2fa", "authentication"],
+  "keywords": ["authsignal", "mfa", "2fa", "authentication"],
   "exports": {
     ".": "./dist/index.js"
   },
