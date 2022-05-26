@@ -14,9 +14,9 @@ export class Authsignal {
   }
 
   public async mfa(input: MfaInput): Promise<MfaOutput> {
-    const {userId} = input;
+    const {userId, redirectUrl} = input;
 
-    const url = `${this.apiBaseUrl}/user/${userId}`;
+    const url = `${this.apiBaseUrl}/users/${userId}?redirectUrl=${redirectUrl}`;
 
     const config = this.getBasicAuthConfig();
 
@@ -38,11 +38,10 @@ export class Authsignal {
       actionCode: action,
       idempotencyKey,
       redirectUrl,
-      properties: {
-        ip: {address: ipAddress},
-        device: {id: deviceId, userAgent},
-        custom,
-      },
+      ipAddress,
+      userAgent,
+      deviceId,
+      custom,
     };
 
     const config = this.getBasicAuthConfig();

@@ -5,6 +5,7 @@ export interface AuthsignalConstructor {
 
 export interface MfaInput {
   userId: string;
+  redirectUrl?: string;
 }
 
 export interface MfaOutput {
