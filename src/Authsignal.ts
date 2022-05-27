@@ -1,6 +1,15 @@
 import axios from "axios";
 
-import {AuthsignalConstructor, MfaInput, MfaOutput, TrackInput, TrackOutput, UserActionState} from "./types";
+import {
+  AuthsignalConstructor,
+  GetActionInput,
+  GetActionOutput,
+  MfaInput,
+  MfaOutput,
+  TrackInput,
+  TrackOutput,
+  UserActionState,
+} from "./types";
 
 const DEFAULT_SIGNAL_API_BASE_URL = "https://dev-signal.authsignal.com/v1";
 
@@ -16,7 +25,9 @@ export class Authsignal {
   public async mfa(input: MfaInput): Promise<MfaOutput> {
     const {userId, redirectUrl} = input;
 
-    const url = `${this.apiBaseUrl}/users/${userId}?redirectUrl=${redirectUrl}`;
+    const queryParams = redirectUrl ? `?redirectUrl=${redirectUrl}` : "";
+
+    const url = `${this.apiBaseUrl}/users/${userId}${queryParams}`;
 
     const config = this.getBasicAuthConfig();
 
@@ -56,6 +67,20 @@ export class Authsignal {
     };
   }
 
+  public async getAction(input: GetActionInput): Promise<GetActionOutput> {
+    const {userId, action, idempotencyKey} = input;
+
+    const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.get<GetActionRawResponse>(url, config);
+
+    return {
+      state: response.data.state,
+    };
+  }
+
   private getBasicAuthConfig() {
     return {
       auth: {
@@ -80,4 +105,8 @@ interface TrackRawResponse {
   state: UserActionState;
   idempotencyKey: string;
   ruleIds: string[];
+}
+
+interface GetActionRawResponse {
+  state: UserActionState;
 }

@@ -31,6 +31,16 @@ export interface TrackOutput {
   challengeUrl?: string;
 }
 
+export interface GetActionInput {
+  userId: string;
+  action: string;
+  idempotencyKey: string;
+}
+
+export interface GetActionOutput {
+  state: UserActionState;
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
