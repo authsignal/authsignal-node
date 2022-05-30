@@ -1,2 +1,2 @@
-export * from "./Authsignal";
+export * from "./AuthsignalServer";
 export * from "./types";

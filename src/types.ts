@@ -1,4 +1,4 @@
-export interface AuthsignalConstructor {
+export interface AuthsignalServerConstructor {
   secret: string;
   apiBaseUrl?: string;
 }
@@ -8,9 +8,9 @@ export interface MfaInput {
   redirectUrl?: string;
 }
 
-export interface MfaOutput {
+export interface MfaResult {
   isEnrolled: boolean;
-  mfaUrl: string;
+  url: string;
 }
 
 export interface TrackInput {
@@ -24,7 +24,7 @@ export interface TrackInput {
   custom?: object;
 }
 
-export interface TrackOutput {
+export interface TrackResult {
   state: UserActionState;
   idempotencyKey: string;
   ruleIds: string[];
@@ -37,7 +37,7 @@ export interface GetActionInput {
   idempotencyKey: string;
 }
 
-export interface GetActionOutput {
+export interface GetActionResult {
   state: UserActionState;
 }
 

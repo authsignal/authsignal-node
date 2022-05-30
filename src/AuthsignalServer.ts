@@ -1,28 +1,28 @@
 import axios from "axios";
 
 import {
-  AuthsignalConstructor,
+  AuthsignalServerConstructor,
   GetActionInput,
-  GetActionOutput,
+  GetActionResult,
   MfaInput,
-  MfaOutput,
+  MfaResult,
   TrackInput,
-  TrackOutput,
+  TrackResult,
   UserActionState,
 } from "./types";
 
-const DEFAULT_SIGNAL_API_BASE_URL = "https://dev-signal.authsignal.com/v1";
+const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
 
-export class Authsignal {
+export class AuthsignalServer {
   secret: string;
   apiBaseUrl: string;
 
-  constructor({secret, apiBaseUrl}: AuthsignalConstructor) {
+  constructor({secret, apiBaseUrl}: AuthsignalServerConstructor) {
     this.secret = secret;
     this.apiBaseUrl = apiBaseUrl ?? DEFAULT_SIGNAL_API_BASE_URL;
   }
 
-  public async mfa(input: MfaInput): Promise<MfaOutput> {
+  public async mfa(input: MfaInput): Promise<MfaResult> {
     const {userId, redirectUrl} = input;
 
     const queryParams = redirectUrl ? `?redirectUrl=${redirectUrl}` : "";
@@ -34,12 +34,12 @@ export class Authsignal {
     const response = await axios.get<MfaRawResponse>(url, config);
 
     return {
-      mfaUrl: response.data.url,
+      url: response.data.url,
       isEnrolled: response.data.isEnrolled,
     };
   }
 
-  public async track(input: TrackInput): Promise<TrackOutput> {
+  public async track(input: TrackInput): Promise<TrackResult> {
     const {userId, action, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom} = input;
 
     const url = `${this.apiBaseUrl}/action/track`;
@@ -67,7 +67,7 @@ export class Authsignal {
     };
   }
 
-  public async getAction(input: GetActionInput): Promise<GetActionOutput> {
+  public async getAction(input: GetActionInput): Promise<GetActionResult> {
     const {userId, action, idempotencyKey} = input;
 
     const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
