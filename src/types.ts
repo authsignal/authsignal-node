@@ -3,17 +3,17 @@ export interface AuthsignalServerConstructor {
   apiBaseUrl?: string;
 }
 
-export interface MfaInput {
+export interface MfaRequest {
   userId: string;
   redirectUrl?: string;
 }
 
-export interface MfaResult {
+export interface MfaResponse {
   isEnrolled: boolean;
   url: string;
 }
 
-export interface TrackInput {
+export interface TrackRequest {
   userId: string;
   action: string;
   idempotencyKey?: string;
@@ -24,20 +24,20 @@ export interface TrackInput {
   custom?: object;
 }
 
-export interface TrackResult {
+export interface TrackResponse {
   state: UserActionState;
   idempotencyKey: string;
   ruleIds: string[];
   challengeUrl?: string;
 }
 
-export interface GetActionInput {
+export interface GetActionRequest {
   userId: string;
   action: string;
   idempotencyKey: string;
 }
 
-export interface GetActionResult {
+export interface GetActionResponse {
   state: UserActionState;
 }
 
