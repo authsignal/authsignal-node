@@ -18,7 +18,7 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
     action = DEFAULT_ACTION_NAME,
     redirectUrl = `https://${event.request.hostname}/continue`,
     custom = {challenge: true},
-  } = options;
+  } = options ?? {};
 
   const authsignalServer = new AuthsignalServer({secret});
 
@@ -56,7 +56,7 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
     userId = event.user.user_id,
     action = DEFAULT_ACTION_NAME,
     failureMessage = "MFA challenge failed",
-  } = options;
+  } = options ?? {};
 
   const payload = api.redirect.validateToken({secret, tokenParameterName: "token"});
 
