@@ -40,11 +40,11 @@ export class AuthsignalServer {
   }
 
   public async track(input: TrackRequest): Promise<TrackResponse> {
-    const {userId, action, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom} = input;
+    const {userId, action, email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom} = input;
 
-    const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
+    const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}`;
 
-    const data = {redirectUrl, ipAddress, userAgent, deviceId, custom};
+    const data = {email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom};
 
     const config = this.getBasicAuthConfig();
 

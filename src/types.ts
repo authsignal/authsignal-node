@@ -16,6 +16,7 @@ export interface MfaResponse {
 export interface TrackRequest {
   userId: string;
   action: string;
+  email?: string;
   idempotencyKey?: string;
   redirectUrl?: string;
   ipAddress?: string;
