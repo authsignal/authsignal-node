@@ -53,7 +53,7 @@ export class AuthsignalServer {
     return {
       state: response.data.state,
       idempotencyKey: response.data.idempotencyKey,
-      challengeUrl: response.data.challenge?.challengeUrl,
+      challengeUrl: response.data.challengeUrl,
       ruleIds: response.data.ruleIds,
     };
   }
@@ -84,18 +84,14 @@ export class AuthsignalServer {
 
 interface MfaRawResponse {
   isEnrolled: boolean;
-  accessToken: string;
   url: string;
 }
 
 interface TrackRawResponse {
-  challenge?: {
-    accessToken: string;
-    challengeUrl: string;
-  };
   state: UserActionState;
   idempotencyKey: string;
   ruleIds: string[];
+  challengeUrl?: string;
 }
 
 interface GetActionRawResponse {

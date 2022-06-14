@@ -37,7 +37,7 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
       userAgent: event.request.user_agent,
     });
 
-    if (trackResult.state === UserActionState.CHALLENGE_INITIATED && trackResult.challengeUrl) {
+    if (trackResult.state === UserActionState.CHALLENGE_REQUIRED && trackResult.challengeUrl) {
       api.redirect.sendUserTo(trackResult.challengeUrl);
     }
   }
