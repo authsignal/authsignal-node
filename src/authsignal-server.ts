@@ -58,18 +58,26 @@ export class AuthsignalServer {
     };
   }
 
-  public async getAction(input: GetActionRequest): Promise<GetActionResponse> {
+  public async getAction(input: GetActionRequest): Promise<GetActionResponse | undefined> {
     const {userId, action, idempotencyKey} = input;
 
     const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<GetActionRawResponse>(url, config);
+    try {
+      const response = await axios.get<GetActionRawResponse>(url, config);
 
-    return {
-      state: response.data.state,
-    };
+      return {
+        state: response.data.state,
+      };
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 404) {
+        return undefined;
+      } else {
+        throw err;
+      }
+    }
   }
 
   private getBasicAuthConfig() {

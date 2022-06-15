@@ -17,7 +17,7 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
     userId = event.user.user_id,
     action = DEFAULT_ACTION_NAME,
     redirectUrl = `https://${event.request.hostname}/continue`,
-    custom = {challenge: true},
+    custom = {},
   } = options ?? {};
 
   const authsignalServer = new AuthsignalServer({secret});
@@ -62,13 +62,13 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
 
   const authsignalServer = new AuthsignalServer({secret});
 
-  const getActionResult = await authsignalServer.getAction({
+  const actionResult = await authsignalServer.getAction({
     action,
     userId,
     idempotencyKey: payload.other.idempotencyKey,
   });
 
-  if (getActionResult.state !== UserActionState.CHALLENGE_SUCCEEDED) {
+  if (actionResult && actionResult.state !== UserActionState.CHALLENGE_SUCCEEDED) {
     api.access.deny(failureMessage);
   }
 }
