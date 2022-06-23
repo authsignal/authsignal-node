@@ -10,6 +10,6 @@ npm install @authsignal/node
 
 ## Documentation
 
-Check out our [getting started guide](https://quixotic-lungfish.super.site/getting-started) for documentation on how to get up and running quickly.
+Check out our [getting started guide](https://docs.authsignal.com/quick-start) for documentation on how to get up and running quickly.
 
-Or browse the [full documentation](https://quixotic-lungfish.super.site/documentation) for the Node.js client.
+Or browse the [full documentation](https://docs.authsignal.com/authsignal-server-api) for the Node.js client.
