@@ -2,6 +2,7 @@ import axios from "axios";
 
 import {
   AuthsignalServerConstructor,
+  EnrolVerifiedAuthenticatorRequest,
   GetActionRequest,
   GetActionResponse,
   MfaRequest,
@@ -9,6 +10,7 @@ import {
   TrackRequest,
   TrackResponse,
   UserActionState,
+  UserAuthenticator,
 } from "./types";
 
 const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
@@ -22,8 +24,8 @@ export class AuthsignalServer {
     this.apiBaseUrl = apiBaseUrl ?? DEFAULT_SIGNAL_API_BASE_URL;
   }
 
-  public async mfa(input: MfaRequest): Promise<MfaResponse> {
-    const {userId, redirectUrl} = input;
+  public async mfa(request: MfaRequest): Promise<MfaResponse> {
+    const {userId, redirectUrl} = request;
 
     const queryParams = redirectUrl ? `?redirectUrl=${redirectUrl}` : "";
 
@@ -39,8 +41,8 @@ export class AuthsignalServer {
     };
   }
 
-  public async track(input: TrackRequest): Promise<TrackResponse> {
-    const {userId, action, email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom} = input;
+  public async track(request: TrackRequest): Promise<TrackResponse> {
+    const {userId, action, email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom} = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}`;
 
@@ -58,8 +60,8 @@ export class AuthsignalServer {
     };
   }
 
-  public async getAction(input: GetActionRequest): Promise<GetActionResponse | undefined> {
-    const {userId, action, idempotencyKey} = input;
+  public async getAction(request: GetActionRequest): Promise<GetActionResponse | undefined> {
+    const {userId, action, idempotencyKey} = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
 
@@ -78,6 +80,20 @@ export class AuthsignalServer {
         throw err;
       }
     }
+  }
+
+  public async enrolVerifiedAuthenticator(request: EnrolVerifiedAuthenticatorRequest): Promise<UserAuthenticator> {
+    const {userId, phoneNumber} = request;
+
+    const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
+
+    const data = {phoneNumber};
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.post<UserAuthenticator>(url, data, config);
+
+    return response.data;
   }
 
   private getBasicAuthConfig() {
