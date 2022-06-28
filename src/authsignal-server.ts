@@ -3,14 +3,13 @@ import axios from "axios";
 import {
   AuthsignalServerConstructor,
   EnrolVerifiedAuthenticatorRequest,
+  EnrolVerifiedAuthenticatorResponse,
   GetActionRequest,
   GetActionResponse,
   MfaRequest,
   MfaResponse,
   TrackRequest,
   TrackResponse,
-  UserActionState,
-  UserAuthenticator,
 } from "./types";
 
 const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
@@ -33,12 +32,9 @@ export class AuthsignalServer {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<MfaRawResponse>(url, config);
+    const response = await axios.get<MfaResponse>(url, config);
 
-    return {
-      url: response.data.url,
-      isEnrolled: response.data.isEnrolled,
-    };
+    return response.data;
   }
 
   public async track(request: TrackRequest): Promise<TrackResponse> {
@@ -50,14 +46,9 @@ export class AuthsignalServer {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<TrackRawResponse>(url, data, config);
+    const response = await axios.post<TrackResponse>(url, data, config);
 
-    return {
-      state: response.data.state,
-      idempotencyKey: response.data.idempotencyKey,
-      challengeUrl: response.data.challengeUrl,
-      ruleIds: response.data.ruleIds,
-    };
+    return response.data;
   }
 
   public async getAction(request: GetActionRequest): Promise<GetActionResponse | undefined> {
@@ -68,11 +59,9 @@ export class AuthsignalServer {
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.get<GetActionRawResponse>(url, config);
+      const response = await axios.get<GetActionResponse>(url, config);
 
-      return {
-        state: response.data.state,
-      };
+      return response.data;
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 404) {
         return undefined;
@@ -82,7 +71,9 @@ export class AuthsignalServer {
     }
   }
 
-  public async enrolVerifiedAuthenticator(request: EnrolVerifiedAuthenticatorRequest): Promise<UserAuthenticator> {
+  public async enrolVerifiedAuthenticator(
+    request: EnrolVerifiedAuthenticatorRequest
+  ): Promise<EnrolVerifiedAuthenticatorResponse> {
     const {userId, phoneNumber} = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
@@ -91,7 +82,7 @@ export class AuthsignalServer {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<UserAuthenticator>(url, data, config);
+    const response = await axios.post<EnrolVerifiedAuthenticatorResponse>(url, data, config);
 
     return response.data;
   }
@@ -104,20 +95,4 @@ export class AuthsignalServer {
       },
     };
   }
-}
-
-interface MfaRawResponse {
-  isEnrolled: boolean;
-  url: string;
-}
-
-interface TrackRawResponse {
-  state: UserActionState;
-  idempotencyKey: string;
-  ruleIds: string[];
-  challengeUrl?: string;
-}
-
-interface GetActionRawResponse {
-  state: UserActionState;
 }

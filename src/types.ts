@@ -47,6 +47,11 @@ export interface EnrolVerifiedAuthenticatorRequest {
   phoneNumber: string;
 }
 
+export interface EnrolVerifiedAuthenticatorResponse {
+  authenticator: UserAuthenticator;
+  recoveryCodes?: string[];
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
