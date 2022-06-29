@@ -42,12 +42,12 @@ export interface GetActionResponse {
   state: UserActionState;
 }
 
-export interface EnrolVerifiedAuthenticatorRequest {
+export interface EnrollVerifiedAuthenticatorRequest {
   userId: string;
   phoneNumber: string;
 }
 
-export interface EnrolVerifiedAuthenticatorResponse {
+export interface EnrollVerifiedAuthenticatorResponse {
   authenticator: UserAuthenticator;
   recoveryCodes?: string[];
 }
@@ -80,4 +80,14 @@ export enum AuthenticatorType {
 export interface OtpBinding {
   secret: string;
   uri: string;
+}
+
+export interface RedirectTokenPayload {
+  other: {
+    tenantId: string;
+    publishableKey: string;
+    userId: string;
+    actionCode?: string;
+    idempotencyKey: string;
+  };
 }

@@ -2,8 +2,8 @@ import axios from "axios";
 
 import {
   AuthsignalServerConstructor,
-  EnrolVerifiedAuthenticatorRequest,
-  EnrolVerifiedAuthenticatorResponse,
+  EnrollVerifiedAuthenticatorRequest,
+  EnrollVerifiedAuthenticatorResponse,
   GetActionRequest,
   GetActionResponse,
   MfaRequest,
@@ -71,9 +71,9 @@ export class AuthsignalServer {
     }
   }
 
-  public async enrolVerifiedAuthenticator(
-    request: EnrolVerifiedAuthenticatorRequest
-  ): Promise<EnrolVerifiedAuthenticatorResponse> {
+  public async enrollVerifiedAuthenticator(
+    request: EnrollVerifiedAuthenticatorRequest
+  ): Promise<EnrollVerifiedAuthenticatorResponse> {
     const {userId, phoneNumber} = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
@@ -82,7 +82,7 @@ export class AuthsignalServer {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<EnrolVerifiedAuthenticatorResponse>(url, data, config);
+    const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, data, config);
 
     return response.data;
   }
