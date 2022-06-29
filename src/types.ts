@@ -42,10 +42,42 @@ export interface GetActionResponse {
   state: UserActionState;
 }
 
+export interface EnrolVerifiedAuthenticatorRequest {
+  userId: string;
+  phoneNumber: string;
+}
+
+export interface EnrolVerifiedAuthenticatorResponse {
+  authenticator: UserAuthenticator;
+  recoveryCodes?: string[];
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
   CHALLENGE_REQUIRED = "CHALLENGE_REQUIRED",
   CHALLENGE_SUCCEEDED = "CHALLENGE_SUCCEEDED",
   CHALLENGE_FAILED = "CHALLENGE_FAILED",
+}
+
+export interface UserAuthenticator {
+  userId: string;
+  userAuthenticatorId: string;
+  authenticatorType: AuthenticatorType;
+  createdAt: string;
+  isDefault: boolean;
+  verifiedAt?: string;
+  phoneNumber?: string;
+  otpBinding?: OtpBinding;
+  isActive?: boolean;
+}
+
+export enum AuthenticatorType {
+  OOB = "OOB",
+  OTP = "OTP",
+}
+
+export interface OtpBinding {
+  secret: string;
+  uri: string;
 }
