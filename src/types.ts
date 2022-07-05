@@ -44,7 +44,9 @@ export interface GetActionResponse {
 
 export interface EnrollVerifiedAuthenticatorRequest {
   userId: string;
-  phoneNumber: string;
+  oobChannel: string;
+  phoneNumber?: string;
+  email?: string;
 }
 
 export interface EnrollVerifiedAuthenticatorResponse {
@@ -67,9 +69,11 @@ export interface UserAuthenticator {
   createdAt: string;
   isDefault: boolean;
   verifiedAt?: string;
-  phoneNumber?: string;
-  otpBinding?: OtpBinding;
   isActive?: boolean;
+  oobChannel?: OobChannel;
+  otpBinding?: OtpBinding;
+  phoneNumber?: string;
+  email?: string;
 }
 
 export enum AuthenticatorType {
@@ -80,6 +84,11 @@ export enum AuthenticatorType {
 export interface OtpBinding {
   secret: string;
   uri: string;
+}
+
+export enum OobChannel {
+  SMS = "SMS",
+  EMAIL_MAGIC_LINK = "EMAIL_MAGIC_LINK",
 }
 
 export interface RedirectTokenPayload {
