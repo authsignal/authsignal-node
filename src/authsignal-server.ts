@@ -74,11 +74,11 @@ export class AuthsignalServer {
   public async enrollVerifiedAuthenticator(
     request: EnrollVerifiedAuthenticatorRequest
   ): Promise<EnrollVerifiedAuthenticatorResponse> {
-    const {userId, phoneNumber} = request;
+    const {userId, oobChannel, phoneNumber, email} = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
 
-    const data = {phoneNumber};
+    const data = {oobChannel, phoneNumber, email};
 
     const config = this.getBasicAuthConfig();
 
