@@ -1,4 +1,5 @@
 import axios from "axios";
+import jwt from "jsonwebtoken";
 
 import {
   AuthsignalServerConstructor,
@@ -6,15 +7,21 @@ import {
   EnrollVerifiedAuthenticatorResponse,
   GetActionRequest,
   GetActionResponse,
+  LoginWithEmailRequest,
+  LoginWithEmailResponse,
   MfaRequest,
   MfaResponse,
+  RedirectTokenPayload,
   TrackRequest,
   TrackResponse,
+  UserActionState,
+  ValidateChallengeRequest,
+  ValidateChallengeResponse,
 } from "./types";
 
 const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
 
-export class AuthsignalServer {
+export class Authsignal {
   secret: string;
   apiBaseUrl: string;
 
@@ -87,6 +94,42 @@ export class AuthsignalServer {
     return response.data;
   }
 
+  public async loginWithEmail(request: LoginWithEmailRequest): Promise<LoginWithEmailResponse> {
+    const {email, redirectUrl} = request;
+
+    const url = `${this.apiBaseUrl}/users/email/${email}/challenge`;
+
+    const data = {email, redirectUrl};
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.post<LoginWithEmailResponse>(url, data, config);
+
+    return response.data;
+  }
+
+  public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
+    const {token} = request;
+
+    jwt.verify(token, this.secret);
+
+    const decodedToken = <RedirectTokenPayload>jwt.decode(token);
+    const {userId, email, phoneNumber, actionCode: action, idempotencyKey} = decodedToken.other;
+    const user = {userId, email, phoneNumber};
+
+    if (action && idempotencyKey) {
+      const actionResult = await this.getAction({userId, action, idempotencyKey});
+
+      if (actionResult) {
+        if (actionResult.state === UserActionState.CHALLENGE_SUCCEEDED) {
+          return {success: true, user};
+        }
+      }
+    }
+
+    return {success: false, user};
+  }
+
   private getBasicAuthConfig() {
     return {
       auth: {
@@ -96,3 +139,8 @@ export class AuthsignalServer {
     };
   }
 }
+
+/**
+ * @deprecated Use Authsignal
+ */
+export class AuthsignalServer extends Authsignal {}
