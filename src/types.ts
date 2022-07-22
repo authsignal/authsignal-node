@@ -54,6 +54,28 @@ export interface EnrollVerifiedAuthenticatorResponse {
   recoveryCodes?: string[];
 }
 
+export interface LoginWithEmailRequest {
+  email: string;
+  redirectUrl?: string;
+}
+
+export interface LoginWithEmailResponse {
+  url: string;
+}
+
+export interface ValidateChallengeRequest {
+  token: string;
+}
+
+export interface ValidateChallengeResponse {
+  success: boolean;
+  user: {
+    userId: string;
+    email?: string;
+    phoneNumber?: string;
+  };
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
@@ -96,7 +118,9 @@ export interface RedirectTokenPayload {
     tenantId: string;
     publishableKey: string;
     userId: string;
+    email?: string;
+    phoneNumber?: string;
     actionCode?: string;
-    idempotencyKey: string;
+    idempotencyKey?: string;
   };
 }

@@ -1,4 +1,4 @@
-import {AuthsignalServer} from "../authsignal-server";
+import {Authsignal} from "../authsignal";
 import {UserActionState} from "../types";
 
 const DEFAULT_ACTION_NAME = "auth0-login";
@@ -11,6 +11,7 @@ export interface ExecutePostLoginOptions {
   custom?: object;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function handleAuth0ExecutePostLogin(event: any, api: any, options: ExecutePostLoginOptions) {
   const {
     secret = event.secrets.AUTHSIGNAL_SECRET,
@@ -20,14 +21,14 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
     custom = {},
   } = options ?? {};
 
-  const authsignalServer = new AuthsignalServer({secret});
+  const authsignal = new Authsignal({secret});
 
-  const mfaResult = await authsignalServer.mfa({userId, redirectUrl});
+  const mfaResult = await authsignal.mfa({userId, redirectUrl});
 
   if (!mfaResult.isEnrolled) {
     api.redirect.sendUserTo(mfaResult.url);
   } else {
-    const trackResult = await authsignalServer.track({
+    const trackResult = await authsignal.track({
       action,
       userId,
       redirectUrl,
@@ -50,6 +51,7 @@ export interface ContinuePostLoginOptions {
   failureMessage?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function handleAuth0ContinuePostLogin(event: any, api: any, options: ContinuePostLoginOptions) {
   const {
     secret = event.secrets.AUTHSIGNAL_SECRET,
@@ -60,9 +62,9 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
 
   const payload = api.redirect.validateToken({secret, tokenParameterName: "token"});
 
-  const authsignalServer = new AuthsignalServer({secret});
+  const authsignal = new Authsignal({secret});
 
-  const actionResult = await authsignalServer.getAction({
+  const actionResult = await authsignal.getAction({
     action,
     userId,
     idempotencyKey: payload.other.idempotencyKey,
