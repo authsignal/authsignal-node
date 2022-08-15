@@ -2,19 +2,19 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 
 import {
-  AuthsignalServerConstructor,
+  AuthsignalConstructor,
   EnrollVerifiedAuthenticatorRequest,
   EnrollVerifiedAuthenticatorResponse,
   GetActionRequest,
   GetActionResponse,
   LoginWithEmailRequest,
   LoginWithEmailResponse,
-  MfaRequest,
-  MfaResponse,
   RedirectTokenPayload,
   TrackRequest,
   TrackResponse,
   UserActionState,
+  UserRequest,
+  UserResponse,
   ValidateChallengeRequest,
   ValidateChallengeResponse,
 } from "./types";
@@ -24,32 +24,43 @@ const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
 export class Authsignal {
   secret: string;
   apiBaseUrl: string;
+  redirectUrl?: string;
 
-  constructor({secret, apiBaseUrl}: AuthsignalServerConstructor) {
+  constructor({secret, apiBaseUrl, redirectUrl}: AuthsignalConstructor) {
     this.secret = secret;
     this.apiBaseUrl = apiBaseUrl ?? DEFAULT_SIGNAL_API_BASE_URL;
+    this.redirectUrl = redirectUrl;
   }
 
-  public async mfa(request: MfaRequest): Promise<MfaResponse> {
-    const {userId, redirectUrl} = request;
+  public async getUser(request: UserRequest): Promise<UserResponse> {
+    const {userId} = request;
 
-    const queryParams = redirectUrl ? `?redirectUrl=${redirectUrl}` : "";
-
-    const url = `${this.apiBaseUrl}/users/${userId}${queryParams}`;
+    const url = `${this.apiBaseUrl}/users/${userId}`;
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<MfaResponse>(url, config);
+    const response = await axios.get<UserResponse>(url, config);
 
     return response.data;
   }
 
   public async track(request: TrackRequest): Promise<TrackResponse> {
-    const {userId, action, email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom} = request;
+    const {
+      userId,
+      action,
+      email,
+      idempotencyKey,
+      ipAddress,
+      userAgent,
+      deviceId,
+      custom,
+      redirectToSettings,
+      redirectUrl = this.redirectUrl,
+    } = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}`;
 
-    const data = {email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom};
+    const data = {email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom, redirectToSettings};
 
     const config = this.getBasicAuthConfig();
 
@@ -139,8 +150,3 @@ export class Authsignal {
     };
   }
 }
-
-/**
- * @deprecated Use Authsignal
- */
-export class AuthsignalServer extends Authsignal {}

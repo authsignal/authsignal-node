@@ -1,16 +1,15 @@
-export interface AuthsignalServerConstructor {
+export interface AuthsignalConstructor {
   secret: string;
   apiBaseUrl?: string;
-}
-
-export interface MfaRequest {
-  userId: string;
   redirectUrl?: string;
 }
 
-export interface MfaResponse {
+export interface UserRequest {
+  userId: string;
+}
+
+export interface UserResponse {
   isEnrolled: boolean;
-  url: string;
 }
 
 export interface TrackRequest {
@@ -23,12 +22,15 @@ export interface TrackRequest {
   userAgent?: string;
   deviceId?: string;
   custom?: object;
+  redirectToSettings?: boolean;
 }
 
 export interface TrackResponse {
   state: UserActionState;
   idempotencyKey: string;
   ruleIds: string[];
+  url: string;
+  isEnrolled: boolean;
   challengeUrl?: string;
 }
 
