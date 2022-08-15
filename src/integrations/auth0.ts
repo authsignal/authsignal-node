@@ -23,24 +23,20 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
 
   const authsignal = new Authsignal({secret});
 
-  const mfaResult = await authsignal.mfa({userId, redirectUrl});
+  const result = await authsignal.track({
+    action,
+    userId,
+    redirectUrl,
+    custom,
+    email: event.user.email,
+    ipAddress: event.request.ip,
+    userAgent: event.request.user_agent,
+  });
 
-  if (!mfaResult.isEnrolled) {
-    api.redirect.sendUserTo(mfaResult.url);
-  } else {
-    const trackResult = await authsignal.track({
-      action,
-      userId,
-      redirectUrl,
-      custom,
-      email: event.user.email,
-      ipAddress: event.request.ip,
-      userAgent: event.request.user_agent,
-    });
+  const {isEnrolled, state, url} = result;
 
-    if (trackResult.state === UserActionState.CHALLENGE_REQUIRED && trackResult.challengeUrl) {
-      api.redirect.sendUserTo(trackResult.challengeUrl);
-    }
+  if (!isEnrolled || state === UserActionState.CHALLENGE_REQUIRED) {
+    api.redirect.sendUserTo(url);
   }
 }
 
