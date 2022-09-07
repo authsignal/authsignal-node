@@ -13,6 +13,12 @@ export interface ExecutePostLoginOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function handleAuth0ExecutePostLogin(event: any, api: any, options: ExecutePostLoginOptions) {
+  // Redirects are not possible for refresh token exchange
+  // https://auth0.com/docs/customize/actions/flows-and-triggers/login-flow/redirect-with-actions#refresh-tokens
+  if (event.transaction?.protocol === "oauth2-refresh-token") {
+    return;
+  }
+
   const {
     secret = event.secrets.AUTHSIGNAL_SECRET,
     userId = event.user.user_id,
