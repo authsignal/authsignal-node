@@ -120,12 +120,17 @@ export class Authsignal {
   }
 
   public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
-    const {token} = request;
+    const {userId, token} = request;
 
     jwt.verify(token, this.secret);
 
     const decodedToken = <RedirectTokenPayload>jwt.decode(token);
-    const {userId, email, phoneNumber, actionCode: action, idempotencyKey} = decodedToken.other;
+
+    if (userId !== decodedToken.other.userId) {
+      throw new Error("Invalid user");
+    }
+
+    const {email, phoneNumber, actionCode: action, idempotencyKey} = decodedToken.other;
     const user = {userId, email, phoneNumber};
 
     if (action && idempotencyKey) {

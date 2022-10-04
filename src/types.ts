@@ -66,6 +66,7 @@ export interface LoginWithEmailResponse {
 }
 
 export interface ValidateChallengeRequest {
+  userId: string;
   token: string;
 }
 
