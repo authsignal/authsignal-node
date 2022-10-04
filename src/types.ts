@@ -72,7 +72,7 @@ export interface ValidateChallengeRequest {
 
 export interface ValidateChallengeResponse {
   success: boolean;
-  state: UserActionState;
+  state?: UserActionState;
 }
 
 export enum UserActionState {

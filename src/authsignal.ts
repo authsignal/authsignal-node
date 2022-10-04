@@ -130,20 +130,20 @@ export class Authsignal {
       throw new Error("Invalid user");
     }
 
-    const {email, phoneNumber, actionCode: action, idempotencyKey} = decodedToken.other;
-    const user = {userId, email, phoneNumber};
+    const {actionCode: action, idempotencyKey} = decodedToken.other;
 
     if (action && idempotencyKey) {
       const actionResult = await this.getAction({userId, action, idempotencyKey});
 
       if (actionResult) {
-        if (actionResult.state === UserActionState.CHALLENGE_SUCCEEDED) {
-          return {success: true, user};
-        }
+        const {state} = actionResult;
+        const success = state === UserActionState.CHALLENGE_SUCCEEDED;
+
+        return {success, state};
       }
     }
 
-    return {success: false, user};
+    return {success: false, state: undefined};
   }
 
   private getBasicAuthConfig() {
