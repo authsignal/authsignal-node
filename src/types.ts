@@ -72,11 +72,7 @@ export interface ValidateChallengeRequest {
 
 export interface ValidateChallengeResponse {
   success: boolean;
-  user: {
-    userId: string;
-    email?: string;
-    phoneNumber?: string;
-  };
+  state: UserActionState;
 }
 
 export enum UserActionState {
