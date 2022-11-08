@@ -43,6 +43,8 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
 
   if (!isEnrolled || state === UserActionState.CHALLENGE_REQUIRED) {
     api.redirect.sendUserTo(url);
+  } else if (state === UserActionState.BLOCK) {
+    api.access.deny("Action blocked");
   }
 }
 
