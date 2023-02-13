@@ -10,6 +10,8 @@ export interface UserRequest {
 
 export interface UserResponse {
   isEnrolled: boolean;
+  enrolledVerificationMethods?: VerificationMethod;
+  allowedVerificationMethods?: VerificationMethod;
 }
 
 export interface TrackRequest {
@@ -31,6 +33,8 @@ export interface TrackResponse {
   ruleIds: string[];
   url: string;
   isEnrolled: boolean;
+  enrolledVerificationMethods?: VerificationMethod;
+  allowedVerificationMethods?: VerificationMethod;
   challengeUrl?: string;
 }
 
@@ -42,6 +46,7 @@ export interface GetActionRequest {
 
 export interface GetActionResponse {
   state: UserActionState;
+  verificationMethod?: VerificationMethod;
 }
 
 export interface EnrollVerifiedAuthenticatorRequest {
@@ -122,4 +127,15 @@ export interface RedirectTokenPayload {
     actionCode?: string;
     idempotencyKey?: string;
   };
+}
+
+export enum VerificationMethod {
+  SMS = "SMS",
+  AUTHENTICATOR_APP = "AUTHENTICATOR_APP",
+  RECOVERY_CODE = "RECOVERY_CODE",
+  EMAIL_MAGIC_LINK = "EMAIL_MAGIC_LINK",
+  PUSH_NOTIFICATION = "PUSH_NOTIFICATION",
+  SECURITY_KEY = "SECURITY_KEY",
+  VERIFF = "VERIFF",
+  IPROOV = "IPROOV",
 }
