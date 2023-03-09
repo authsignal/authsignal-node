@@ -54,6 +54,7 @@ export interface EnrollVerifiedAuthenticatorRequest {
   oobChannel: string;
   phoneNumber?: string;
   email?: string;
+  setDefault?: boolean;
 }
 
 export interface EnrollVerifiedAuthenticatorResponse {
