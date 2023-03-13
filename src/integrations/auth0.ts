@@ -55,6 +55,7 @@ export interface ContinuePostLoginOptions {
   userId?: string;
   action?: string;
   failureMessage?: string;
+  apiBaseUrl?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,11 +65,12 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
     userId = event.user.user_id,
     action = DEFAULT_ACTION_NAME,
     failureMessage = "MFA challenge failed",
+    apiBaseUrl,
   } = options ?? {};
 
   const payload = api.redirect.validateToken({secret, tokenParameterName: "token"});
 
-  const authsignal = new Authsignal({secret});
+  const authsignal = new Authsignal({secret, apiBaseUrl});
 
   const actionResult = await authsignal.getAction({
     action,
