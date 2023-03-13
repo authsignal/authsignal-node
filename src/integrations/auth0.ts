@@ -9,6 +9,7 @@ export interface ExecutePostLoginOptions {
   action?: string;
   redirectUrl?: string;
   custom?: object;
+  apiBaseUrl?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,9 +26,10 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
     action = DEFAULT_ACTION_NAME,
     redirectUrl = `https://${event.request.hostname}/continue`,
     custom = {},
+    apiBaseUrl,
   } = options ?? {};
 
-  const authsignal = new Authsignal({secret});
+  const authsignal = new Authsignal({secret, apiBaseUrl});
 
   const result = await authsignal.track({
     action,
