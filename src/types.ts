@@ -81,6 +81,15 @@ export interface ValidateChallengeResponse {
   state?: UserActionState;
 }
 
+export interface TokenRequest {
+  userId: string;
+  scope?: string;
+}
+
+export interface TokenResponse {
+  accessToken: string;
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
