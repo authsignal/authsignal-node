@@ -47,22 +47,11 @@ export class Authsignal {
   }
 
   public async track(request: TrackRequest): Promise<TrackResponse> {
-    const {
-      userId,
-      action,
-      email,
-      idempotencyKey,
-      ipAddress,
-      userAgent,
-      deviceId,
-      custom,
-      redirectToSettings,
-      redirectUrl = this.redirectUrl,
-    } = request;
+    const {userId, action, redirectUrl = this.redirectUrl, ...rest} = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}`;
 
-    const data = {email, idempotencyKey, redirectUrl, ipAddress, userAgent, deviceId, custom, redirectToSettings};
+    const data = {redirectUrl, ...rest};
 
     const config = this.getBasicAuthConfig();
 
