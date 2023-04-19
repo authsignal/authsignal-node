@@ -25,6 +25,7 @@ export interface TrackRequest {
   deviceId?: string;
   custom?: object;
   redirectToSettings?: boolean;
+  scope?: string;
 }
 
 export interface TrackResponse {

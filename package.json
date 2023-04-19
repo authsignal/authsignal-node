@@ -1,6 +1,6 @@
 {
   "name": "@authsignal/node",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "types": "dist/index.d.ts",
   "keywords": [
     "authsignal",
