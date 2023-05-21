@@ -73,11 +73,11 @@ export interface LoginWithEmailResponse {
 }
 
 export interface ValidateChallengeRequest {
-  userId: string;
   token: string;
 }
 
 export interface ValidateChallengeResponse {
+  userId: string;
   success: boolean;
   state?: UserActionState;
 }
