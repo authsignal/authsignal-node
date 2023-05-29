@@ -21,7 +21,7 @@ import {
   ValidateChallengeResponse,
 } from "./types";
 
-const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
+export const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
 
 export class Authsignal {
   secret: string;
