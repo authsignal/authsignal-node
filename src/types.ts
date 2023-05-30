@@ -10,33 +10,32 @@ export interface UserRequest {
 
 export interface UserResponse {
   isEnrolled: boolean;
-  enrolledVerificationMethods?: VerificationMethod;
-  allowedVerificationMethods?: VerificationMethod;
+  enrolledVerificationMethods?: VerificationMethod[];
+  allowedVerificationMethods?: VerificationMethod[];
 }
 
 export interface TrackRequest {
   userId: string;
   action: string;
-  email?: string;
   idempotencyKey?: string;
   redirectUrl?: string;
+  redirectToSettings?: boolean;
   ipAddress?: string;
   userAgent?: string;
   deviceId?: string;
-  custom?: object;
-  redirectToSettings?: boolean;
   scope?: string;
+  email?: string;
+  custom?: object;
 }
 
 export interface TrackResponse {
   state: UserActionState;
   idempotencyKey: string;
-  ruleIds: string[];
   url: string;
+  token: string;
   isEnrolled: boolean;
-  enrolledVerificationMethods?: VerificationMethod;
-  allowedVerificationMethods?: VerificationMethod;
-  challengeUrl?: string;
+  enrolledVerificationMethods?: VerificationMethod[];
+  allowedVerificationMethods?: VerificationMethod[];
 }
 
 export interface GetActionRequest {
@@ -55,7 +54,7 @@ export interface EnrollVerifiedAuthenticatorRequest {
   oobChannel: string;
   phoneNumber?: string;
   email?: string;
-  setDefault?: boolean;
+  isDefault?: boolean;
 }
 
 export interface EnrollVerifiedAuthenticatorResponse {
@@ -80,15 +79,6 @@ export interface ValidateChallengeResponse {
   userId: string;
   success: boolean;
   state?: UserActionState;
-}
-
-export interface TokenRequest {
-  userId: string;
-  scope?: string;
-}
-
-export interface TokenResponse {
-  accessToken: string;
 }
 
 export enum UserActionState {
