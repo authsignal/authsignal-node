@@ -10,8 +10,6 @@ import {
   LoginWithEmailRequest,
   LoginWithEmailResponse,
   RedirectTokenPayload,
-  TokenRequest,
-  TokenResponse,
   TrackRequest,
   TrackResponse,
   UserActionState,
@@ -129,16 +127,6 @@ export class Authsignal {
     }
 
     return {userId, success: false, state: undefined};
-  }
-
-  public async token(request: TokenRequest): Promise<TokenResponse> {
-    const url = `${this.apiBaseUrl}/token`;
-
-    const config = this.getBasicAuthConfig();
-
-    const response = await axios.post<TokenResponse>(url, request, config);
-
-    return response.data;
   }
 
   private getBasicAuthConfig() {
