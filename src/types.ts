@@ -10,6 +10,8 @@ export interface UserRequest {
 
 export interface UserResponse {
   isEnrolled: boolean;
+  email?: string;
+  phoneNumber?: string;
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
 }
@@ -25,6 +27,7 @@ export interface TrackRequest {
   deviceId?: string;
   scope?: string;
   email?: string;
+  phoneNumber?: string;
   custom?: object;
 }
 
