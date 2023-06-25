@@ -46,6 +46,7 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
     email: event.user.email,
     ipAddress: event.request.ip,
     userAgent: event.request.user_agent,
+    deviceId: event.request.query?.["device_id"],
   });
 
   const {isEnrolled, state, url} = result;
