@@ -126,7 +126,7 @@ export class Authsignal {
         const {state} = actionResult;
         const success = state === UserActionState.CHALLENGE_SUCCEEDED;
 
-        return {userId, success, state};
+        return {userId, success, state, action};
       }
     }
 

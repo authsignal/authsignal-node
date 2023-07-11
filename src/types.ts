@@ -83,6 +83,7 @@ export interface ValidateChallengeResponse {
   userId: string;
   success: boolean;
   state?: UserActionState;
+  action?: string;
 }
 
 export enum UserActionState {
