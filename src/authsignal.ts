@@ -115,6 +115,10 @@ export class Authsignal {
 
     const {userId, actionCode: action, idempotencyKey} = decodedToken.other;
 
+    if (request.userId && request.userId !== userId) {
+      return {userId, success: false, state: undefined};
+    }
+
     if (action && idempotencyKey) {
       const actionResult = await this.getAction({userId, action, idempotencyKey});
 
