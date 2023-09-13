@@ -1,6 +1,6 @@
 {
   "name": "@authsignal/node",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -40,6 +40,7 @@
   ],
   "exports": {
     "require": "./dist/index.js",
-    "import": "./dist/index.mjs"
+    "import": "./dist/index.mjs",
+    "types": "./dist/index.d.ts"
   }
 }
