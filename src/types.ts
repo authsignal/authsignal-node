@@ -28,6 +28,7 @@ export interface TrackRequest {
   scope?: string;
   email?: string;
   phoneNumber?: string;
+  username?: string;
   custom?: object;
 }
 
