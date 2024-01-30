@@ -122,6 +122,7 @@ export interface OtpBinding {
 export enum OobChannel {
   SMS = "SMS",
   EMAIL_MAGIC_LINK = "EMAIL_MAGIC_LINK",
+  EMAIL_OTP = "EMAIL_OTP",
 }
 
 export interface RedirectTokenPayload {
