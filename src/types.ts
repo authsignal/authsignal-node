@@ -1,4 +1,5 @@
 export interface AuthsignalConstructor {
+  tenantId: string;
   secret: string;
   apiBaseUrl?: string;
   redirectUrl?: string;
@@ -64,15 +65,6 @@ export interface EnrollVerifiedAuthenticatorRequest {
 export interface EnrollVerifiedAuthenticatorResponse {
   authenticator: UserAuthenticator;
   recoveryCodes?: string[];
-}
-
-export interface LoginWithEmailRequest {
-  email: string;
-  redirectUrl?: string;
-}
-
-export interface LoginWithEmailResponse {
-  url: string;
 }
 
 export interface ValidateChallengeRequest {

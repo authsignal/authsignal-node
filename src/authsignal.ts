@@ -1,5 +1,6 @@
 import axios from "axios";
-import jwt from "jsonwebtoken";
+import jwt, {GetPublicKeyOrSecret} from "jsonwebtoken";
+import jwksRsa from "jwks-rsa";
 
 import {
   AuthsignalConstructor,
@@ -7,8 +8,6 @@ import {
   EnrollVerifiedAuthenticatorResponse,
   GetActionRequest,
   GetActionResponse,
-  LoginWithEmailRequest,
-  LoginWithEmailResponse,
   RedirectTokenPayload,
   TrackRequest,
   TrackResponse,
@@ -19,16 +18,18 @@ import {
   ValidateChallengeResponse,
 } from "./types";
 
-export const DEFAULT_SIGNAL_API_BASE_URL = "https://signal.authsignal.com/v1";
+export const DEFAULT_API_BASE_URL = "https://api.authsignal.com/v1";
 
 export class Authsignal {
+  tenantId: string;
   secret: string;
   apiBaseUrl: string;
   redirectUrl?: string;
 
-  constructor({secret, apiBaseUrl, redirectUrl}: AuthsignalConstructor) {
+  constructor({tenantId, secret, apiBaseUrl, redirectUrl}: AuthsignalConstructor) {
+    this.tenantId = tenantId;
     this.secret = secret;
-    this.apiBaseUrl = apiBaseUrl ?? DEFAULT_SIGNAL_API_BASE_URL;
+    this.apiBaseUrl = apiBaseUrl ?? DEFAULT_API_BASE_URL;
     this.redirectUrl = redirectUrl;
   }
 
@@ -92,31 +93,21 @@ export class Authsignal {
     return response.data;
   }
 
-  public async loginWithEmail(request: LoginWithEmailRequest): Promise<LoginWithEmailResponse> {
-    const {email, redirectUrl} = request;
-
-    const url = `${this.apiBaseUrl}/users/email/${email}/challenge`;
-
-    const data = {email, redirectUrl};
-
-    const config = this.getBasicAuthConfig();
-
-    const response = await axios.post<LoginWithEmailResponse>(url, data, config);
-
-    return response.data;
-  }
-
   public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
     const {token} = request;
-
-    jwt.verify(token, this.secret);
 
     const decodedToken = <RedirectTokenPayload>jwt.decode(token);
 
     const {userId, actionCode: action, idempotencyKey} = decodedToken.other;
 
+    try {
+      await this.verifyToken(token);
+    } catch (err) {
+      return {userId, success: false};
+    }
+
     if (request.userId && request.userId !== userId) {
-      return {userId, success: false, state: undefined};
+      return {userId, success: false};
     }
 
     if (action && idempotencyKey) {
@@ -130,7 +121,7 @@ export class Authsignal {
       }
     }
 
-    return {userId, success: false, state: undefined};
+    return {userId, success: false};
   }
 
   private getBasicAuthConfig() {
@@ -140,5 +131,33 @@ export class Authsignal {
         password: "",
       },
     };
+  }
+
+  private async verifyToken(token: string): Promise<void> {
+    const jwksUri = `${this.apiBaseUrl}/client/public/${this.tenantId}/.well-known/jwks`;
+
+    const jwksClient = jwksRsa({jwksUri});
+
+    const getPublicKeyOrSecret: GetPublicKeyOrSecret = (header, callback) => {
+      if (header.alg === "RS256") {
+        jwksClient.getSigningKey(header.kid, function (err, key) {
+          const publicKey = key?.getPublicKey();
+
+          callback(err, publicKey);
+        });
+      } else {
+        callback(null, this.secret);
+      }
+    };
+
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, getPublicKeyOrSecret, {}, function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }
