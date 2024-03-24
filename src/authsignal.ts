@@ -1,6 +1,6 @@
 import axios from "axios";
 import jwt, {GetPublicKeyOrSecret} from "jsonwebtoken";
-import jwksRsa from "jwks-rsa";
+import jwksRsa, {JwksClient} from "jwks-rsa";
 
 import {
   AuthsignalConstructor,
@@ -25,12 +25,17 @@ export class Authsignal {
   secret: string;
   apiBaseUrl: string;
   redirectUrl?: string;
+  jwksClient: JwksClient;
 
   constructor({tenantId, secret, apiBaseUrl, redirectUrl}: AuthsignalConstructor) {
     this.tenantId = tenantId;
     this.secret = secret;
     this.apiBaseUrl = apiBaseUrl ?? DEFAULT_API_BASE_URL;
     this.redirectUrl = redirectUrl;
+
+    const jwksUri = `${this.apiBaseUrl}/client/public/${this.tenantId}/.well-known/jwks`;
+
+    this.jwksClient = jwksRsa({jwksUri});
   }
 
   public async getUser(request: UserRequest): Promise<UserResponse> {
@@ -134,13 +139,9 @@ export class Authsignal {
   }
 
   private async verifyToken(token: string): Promise<void> {
-    const jwksUri = `${this.apiBaseUrl}/client/public/${this.tenantId}/.well-known/jwks`;
-
-    const jwksClient = jwksRsa({jwksUri});
-
     const getPublicKeyOrSecret: GetPublicKeyOrSecret = (header, callback) => {
       if (header.alg === "RS256") {
-        jwksClient.getSigningKey(header.kid, function (err, key) {
+        this.jwksClient.getSigningKey(header.kid, function (err, key) {
           const publicKey = key?.getPublicKey();
 
           callback(err, publicKey);
