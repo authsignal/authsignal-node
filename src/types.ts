@@ -122,8 +122,6 @@ export interface RedirectTokenPayload {
     tenantId: string;
     publishableKey: string;
     userId: string;
-    email?: string;
-    phoneNumber?: string;
     actionCode?: string;
     idempotencyKey?: string;
   };
