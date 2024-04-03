@@ -13,5 +13,5 @@ export default {
     },
   ],
   plugins: [typescript()],
-  external: ["axios", "jsonwebtoken", "jwks-rsa"],
+  external: ["axios"],
 };

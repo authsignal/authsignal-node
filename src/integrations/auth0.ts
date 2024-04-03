@@ -4,7 +4,6 @@ import {UserActionState} from "../types";
 const DEFAULT_ACTION_NAME = "auth0-login";
 
 export interface ExecutePostLoginOptions {
-  tenantId?: string;
   secret?: string;
   userId?: string;
   action?: string;
@@ -23,7 +22,6 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
 
   const {
     secret = event.secrets.AUTHSIGNAL_SECRET,
-    tenantId = event.secrets.AUTHSIGNAL_TENANT_ID,
     userId = event.user.user_id,
     action = DEFAULT_ACTION_NAME,
     redirectUrl = `https://${event.request.hostname}/continue`,
@@ -38,7 +36,7 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
     return;
   }
 
-  const authsignal = new Authsignal({tenantId, secret, apiBaseUrl});
+  const authsignal = new Authsignal({secret, apiBaseUrl});
 
   const result = await authsignal.track({
     action,
@@ -73,7 +71,6 @@ export interface ContinuePostLoginOptions {
 export async function handleAuth0ContinuePostLogin(event: any, api: any, options: ContinuePostLoginOptions) {
   const {
     secret = event.secrets.AUTHSIGNAL_SECRET,
-    tenantId = event.secrets.AUTHSIGNAL_TENANT_ID,
     userId = event.user.user_id,
     action = DEFAULT_ACTION_NAME,
     failureMessage = "MFA challenge failed",
@@ -82,7 +79,7 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
 
   const payload = api.redirect.validateToken({secret, tokenParameterName: "token"});
 
-  const authsignal = new Authsignal({tenantId, secret, apiBaseUrl});
+  const authsignal = new Authsignal({secret, apiBaseUrl});
 
   const actionResult = await authsignal.getAction({
     action,
