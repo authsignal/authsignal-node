@@ -1,6 +1,6 @@
 {
   "name": "@authsignal/node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -18,9 +18,7 @@
     "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
-    "axios": "^0.27.2",
-    "jsonwebtoken": "^9.0.2",
-    "jwks-rsa": "^3.1.0"
+    "axios": "^1.6.8"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.3.2",

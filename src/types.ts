@@ -1,5 +1,4 @@
 export interface AuthsignalConstructor {
-  tenantId: string;
   secret: string;
   apiBaseUrl?: string;
   redirectUrl?: string;
@@ -73,10 +72,13 @@ export interface ValidateChallengeRequest {
 }
 
 export interface ValidateChallengeResponse {
-  userId: string;
-  success: boolean;
+  isValid: boolean;
   state?: UserActionState;
+  stateUpdatedAt?: string;
+  userId?: string;
   action?: string;
+  idempotencyKey?: string;
+  verificationMethod?: VerificationMethod;
 }
 
 export enum UserActionState {
@@ -96,7 +98,6 @@ export interface UserAuthenticator {
   verifiedAt?: string;
   isActive?: boolean;
   oobChannel?: OobChannel;
-  otpBinding?: OtpBinding;
   phoneNumber?: string;
   email?: string;
 }
@@ -115,16 +116,6 @@ export enum OobChannel {
   SMS = "SMS",
   EMAIL_MAGIC_LINK = "EMAIL_MAGIC_LINK",
   EMAIL_OTP = "EMAIL_OTP",
-}
-
-export interface RedirectTokenPayload {
-  other: {
-    tenantId: string;
-    publishableKey: string;
-    userId: string;
-    actionCode?: string;
-    idempotencyKey?: string;
-  };
 }
 
 export enum VerificationMethod {

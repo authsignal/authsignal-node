@@ -1,6 +1,4 @@
 import axios from "axios";
-import jwt, {GetPublicKeyOrSecret} from "jsonwebtoken";
-import jwksRsa, {JwksClient} from "jwks-rsa";
 
 import {
   AuthsignalConstructor,
@@ -8,10 +6,8 @@ import {
   EnrollVerifiedAuthenticatorResponse,
   GetActionRequest,
   GetActionResponse,
-  RedirectTokenPayload,
   TrackRequest,
   TrackResponse,
-  UserActionState,
   UserRequest,
   UserResponse,
   ValidateChallengeRequest,
@@ -21,21 +17,14 @@ import {
 export const DEFAULT_API_BASE_URL = "https://api.authsignal.com/v1";
 
 export class Authsignal {
-  tenantId: string;
   secret: string;
   apiBaseUrl: string;
   redirectUrl?: string;
-  jwksClient: JwksClient;
 
-  constructor({tenantId, secret, apiBaseUrl, redirectUrl}: AuthsignalConstructor) {
-    this.tenantId = tenantId;
+  constructor({secret, apiBaseUrl, redirectUrl}: AuthsignalConstructor) {
     this.secret = secret;
     this.apiBaseUrl = apiBaseUrl ?? DEFAULT_API_BASE_URL;
     this.redirectUrl = redirectUrl;
-
-    const jwksUri = `${this.apiBaseUrl}/client/public/${this.tenantId}/.well-known/jwks`;
-
-    this.jwksClient = jwksRsa({jwksUri});
   }
 
   public async getUser(request: UserRequest): Promise<UserResponse> {
@@ -101,32 +90,15 @@ export class Authsignal {
   public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
     const {token} = request;
 
-    const decodedToken = <RedirectTokenPayload>jwt.decode(token);
+    const url = `${this.apiBaseUrl}/validate`;
 
-    const {userId, actionCode: action, idempotencyKey} = decodedToken.other;
+    const config = this.getBasicAuthConfig();
 
-    try {
-      await this.verifyToken(token);
-    } catch (err) {
-      return {userId, success: false};
-    }
+    const response = await axios.post<ValidateChallengeRawResponse>(url, {token}, config);
 
-    if (request.userId && request.userId !== userId) {
-      return {userId, success: false};
-    }
+    const {actionCode: action, ...rest} = response.data;
 
-    if (action && idempotencyKey) {
-      const actionResult = await this.getAction({userId, action, idempotencyKey});
-
-      if (actionResult) {
-        const {state} = actionResult;
-        const success = state === UserActionState.CHALLENGE_SUCCEEDED;
-
-        return {userId, success, state, action};
-      }
-    }
-
-    return {userId, success: false};
+    return {action, ...rest};
   }
 
   private getBasicAuthConfig() {
@@ -137,28 +109,8 @@ export class Authsignal {
       },
     };
   }
-
-  private async verifyToken(token: string): Promise<void> {
-    const getPublicKeyOrSecret: GetPublicKeyOrSecret = (header, callback) => {
-      if (header.alg === "RS256") {
-        this.jwksClient.getSigningKey(header.kid, function (err, key) {
-          const publicKey = key?.getPublicKey();
-
-          callback(err, publicKey);
-        });
-      } else {
-        callback(null, this.secret);
-      }
-    };
-
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, getPublicKeyOrSecret, {}, function (err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
 }
+
+type ValidateChallengeRawResponse = Omit<ValidateChallengeResponse, "action"> & {
+  actionCode?: string;
+};
