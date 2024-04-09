@@ -68,7 +68,6 @@ export interface EnrollVerifiedAuthenticatorResponse {
 
 export interface ValidateChallengeRequest {
   token: string;
-  userId?: string;
 }
 
 export interface ValidateChallengeResponse {
