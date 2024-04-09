@@ -88,13 +88,11 @@ export class Authsignal {
   }
 
   public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
-    const {token} = request;
-
     const url = `${this.apiBaseUrl}/validate`;
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<ValidateChallengeRawResponse>(url, {token}, config);
+    const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
 
     const {actionCode: action, ...rest} = response.data;
 
