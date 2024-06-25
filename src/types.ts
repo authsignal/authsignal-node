@@ -30,7 +30,7 @@ export interface TrackRequest {
   phoneNumber?: string;
   username?: string;
   custom?: object;
-  challengeId?: string
+  challengeId?: string;
 }
 
 export interface TrackResponse {
