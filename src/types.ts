@@ -129,4 +129,5 @@ export enum VerificationMethod {
   SECURITY_KEY = "SECURITY_KEY",
   VERIFF = "VERIFF",
   IPROOV = "IPROOV",
+  EMAIL_OTP = "EMAIL_OTP",
 }
