@@ -77,17 +77,14 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
     apiBaseUrl = DEFAULT_API_BASE_URL,
   } = options ?? {};
 
-  const payload = api.redirect.validateToken({secret, tokenParameterName: "token"});
-
   const authsignal = new Authsignal({secret, apiBaseUrl});
 
-  const actionResult = await authsignal.getAction({
-    action,
+  const result = await authsignal.validateChallenge({
+    token: event.request.query?.["token"],
     userId,
-    idempotencyKey: payload.other.idempotencyKey,
   });
 
-  if (actionResult && actionResult.state !== UserActionState.CHALLENGE_SUCCEEDED) {
+  if (result.action !== action || result.state !== UserActionState.CHALLENGE_SUCCEEDED) {
     api.access.deny(failureMessage);
   } else {
     api.authentication.recordMethod(apiBaseUrl);
