@@ -12,6 +12,7 @@ export interface UserResponse {
   isEnrolled: boolean;
   email?: string;
   phoneNumber?: string;
+  username?: string;
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
 }
