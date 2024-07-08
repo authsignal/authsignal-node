@@ -10,6 +10,7 @@ export interface ExecutePostLoginOptions {
   redirectUrl?: string;
   custom?: object;
   apiBaseUrl?: string;
+  forceEnrollment?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,6 +28,7 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
     redirectUrl = `https://${event.request.hostname}/continue`,
     custom = {},
     apiBaseUrl = DEFAULT_API_BASE_URL,
+    forceEnrollment = false,
   } = options ?? {};
 
   const sessionMfaMethod = event.authentication?.methods.find(({name}: {name: string}) => name === apiBaseUrl);
@@ -51,8 +53,10 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
 
   const {isEnrolled, state, url} = result;
 
+  const challengeUrl = forceEnrollment ? `${url}&force_enrollment=true` : url;
+
   if (!isEnrolled || state === UserActionState.CHALLENGE_REQUIRED) {
-    api.redirect.sendUserTo(url);
+    api.redirect.sendUserTo(challengeUrl);
   } else if (state === UserActionState.BLOCK) {
     api.access.deny("Action blocked");
   }
