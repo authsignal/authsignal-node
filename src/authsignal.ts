@@ -2,12 +2,15 @@ import axios from "axios";
 
 import {
   AuthsignalConstructor,
+  ChallengeRequest,
+  ChallengeResponse,
   EnrollVerifiedAuthenticatorRequest,
   EnrollVerifiedAuthenticatorResponse,
   GetActionRequest,
   GetActionResponse,
   TrackRequest,
   TrackResponse,
+  UpdateUserRequest,
   UserRequest,
   UserResponse,
   ValidateChallengeRequest,
@@ -35,6 +38,32 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     const response = await axios.get<UserResponse>(url, config);
+
+    return response.data;
+  }
+
+  public async updateUser(request: UpdateUserRequest): Promise<UserResponse> {
+    const {userId, ...data} = request;
+
+    const url = `${this.apiBaseUrl}/users/${userId}`;
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.post<UserResponse>(url, data, config);
+
+    return response.data;
+  }
+
+  public async getChallenge(request: ChallengeRequest): Promise<ChallengeResponse> {
+    const {userId, action} = request;
+
+    const urlParams = action ? `?action=${action}` : undefined;
+
+    const url = `${this.apiBaseUrl}/users/${userId}/challenge${urlParams}`;
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.get<ChallengeResponse>(url, config);
 
     return response.data;
   }
