@@ -13,8 +13,28 @@ export interface UserResponse {
   email?: string;
   phoneNumber?: string;
   username?: string;
+  displayName?: string;
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
+  custom?: CustomData;
+}
+
+export interface UpdateUserRequest {
+  userId: string;
+  email?: string | null;
+  phoneNumber?: string | null;
+  username?: string | null;
+  displayName?: string | null;
+  custom?: CustomData;
+}
+
+export interface ChallengeRequest {
+  userId: string;
+  action?: string;
+}
+
+export interface ChallengeResponse {
+  challengeId?: string;
 }
 
 export interface TrackRequest {
@@ -30,7 +50,7 @@ export interface TrackRequest {
   email?: string;
   phoneNumber?: string;
   username?: string;
-  custom?: object;
+  custom?: CustomData;
   challengeId?: string;
 }
 
@@ -57,7 +77,7 @@ export interface GetActionResponse {
 
 export interface EnrollVerifiedAuthenticatorRequest {
   userId: string;
-  oobChannel: string;
+  verificationMethod: VerificationMethod;
   phoneNumber?: string;
   email?: string;
   isDefault?: boolean;
@@ -70,6 +90,7 @@ export interface EnrollVerifiedAuthenticatorResponse {
 
 export interface ValidateChallengeRequest {
   token: string;
+  action?: string;
   userId?: string;
 }
 
@@ -81,6 +102,7 @@ export interface ValidateChallengeResponse {
   action?: string;
   idempotencyKey?: string;
   verificationMethod?: VerificationMethod;
+  error?: string;
 }
 
 export enum UserActionState {
@@ -94,41 +116,24 @@ export enum UserActionState {
 export interface UserAuthenticator {
   userId: string;
   userAuthenticatorId: string;
-  authenticatorType: AuthenticatorType;
+  verificationMethod: VerificationMethod;
   createdAt: string;
-  isDefault: boolean;
   verifiedAt?: string;
-  isActive?: boolean;
-  oobChannel?: OobChannel;
   phoneNumber?: string;
   email?: string;
 }
 
-export enum AuthenticatorType {
-  OOB = "OOB",
-  OTP = "OTP",
-}
-
-export interface OtpBinding {
-  secret: string;
-  uri: string;
-}
-
-export enum OobChannel {
-  SMS = "SMS",
-  EMAIL_MAGIC_LINK = "EMAIL_MAGIC_LINK",
-  EMAIL_OTP = "EMAIL_OTP",
-}
-
 export enum VerificationMethod {
   SMS = "SMS",
-  AUTHENTICATOR_APP = "AUTHENTICATOR_APP",
-  RECOVERY_CODE = "RECOVERY_CODE",
+  EMAIL_OTP = "EMAIL_OTP",
   EMAIL_MAGIC_LINK = "EMAIL_MAGIC_LINK",
+  AUTHENTICATOR_APP = "AUTHENTICATOR_APP",
   PASSKEY = "PASSKEY",
-  PUSH = "PUSH",
   SECURITY_KEY = "SECURITY_KEY",
+  PUSH = "PUSH",
   VERIFF = "VERIFF",
   IPROOV = "IPROOV",
-  EMAIL_OTP = "EMAIL_OTP",
+  RECOVERY_CODE = "RECOVERY_CODE",
 }
+
+type CustomData = {[key: string]: string};

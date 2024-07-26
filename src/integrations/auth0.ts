@@ -8,7 +8,7 @@ export interface ExecutePostLoginOptions {
   userId?: string;
   action?: string;
   redirectUrl?: string;
-  custom?: object;
+  custom?: {[key: string]: string};
   apiBaseUrl?: string;
   forceEnrollment?: boolean;
 }
@@ -85,6 +85,7 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
 
   const result = await authsignal.validateChallenge({
     token: event.request.query?.["token"],
+    action,
     userId,
   });
 
