@@ -90,7 +90,7 @@ export interface EnrollVerifiedAuthenticatorResponse {
 
 export interface ValidateChallengeRequest {
   token: string;
-  action: string;
+  action?: string;
   userId?: string;
 }
 
