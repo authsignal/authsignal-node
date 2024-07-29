@@ -55,9 +55,17 @@ export class Authsignal {
   }
 
   public async getChallenge(request: ChallengeRequest): Promise<ChallengeResponse> {
-    const {userId, action} = request;
+    const {userId, action, verificationMethod} = request;
 
-    const urlParams = action ? `?action=${action}` : "";
+    const urlParams = new URLSearchParams();
+
+    if (action) {
+      urlParams.set("action", action);
+    }
+
+    if (verificationMethod) {
+      urlParams.set("verificationMethod", verificationMethod);
+    }
 
     const url = `${this.apiBaseUrl}/users/${userId}/challenge${urlParams}`;
 
