@@ -55,15 +55,21 @@ export class Authsignal {
   }
 
   public async getChallenge(request: ChallengeRequest): Promise<ChallengeResponse> {
-    const {userId, action} = request;
+    const {userId, action, verificationMethod} = request;
 
-    const urlParams = action ? `?action=${action}` : "";
+    const url = new URL(`${this.apiBaseUrl}/users/${userId}/challenge`);
 
-    const url = `${this.apiBaseUrl}/users/${userId}/challenge${urlParams}`;
+    if (action) {
+      url.searchParams.set("action", action);
+    }
+
+    if (verificationMethod) {
+      url.searchParams.set("verificationMethod", verificationMethod);
+    }
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<ChallengeResponse>(url, config);
+    const response = await axios.get<ChallengeResponse>(url.toString(), config);
 
     return response.data;
   }

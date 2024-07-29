@@ -31,6 +31,7 @@ export interface UpdateUserRequest {
 export interface ChallengeRequest {
   userId: string;
   action?: string;
+  verificationMethod?: VerificationMethod;
 }
 
 export interface ChallengeResponse {
