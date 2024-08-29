@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
+import {version} from "../package.json";
 
 import {
   AuthsignalConstructor,
@@ -134,8 +135,11 @@ export class Authsignal {
     return {action, ...rest};
   }
 
-  private getBasicAuthConfig() {
+  private getBasicAuthConfig(): AxiosRequestConfig {
     return {
+      headers: {
+        "X-Authsignal-Node-Version": version,
+      },
       auth: {
         username: this.secret,
         password: "",
