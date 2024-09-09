@@ -11,6 +11,7 @@ import {
   TrackRequest,
   TrackResponse,
   UpdateUserRequest,
+  UserAuthenticator,
   UserRequest,
   UserResponse,
   ValidateChallengeRequest,
@@ -50,6 +51,18 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     const response = await axios.post<UserResponse>(url, data, config);
+
+    return response.data;
+  }
+
+  public async getAuthenticators(request: UserRequest): Promise<UserAuthenticator[]> {
+    const {userId} = request;
+
+    const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.get<UserAuthenticator[]>(url, config);
 
     return response.data;
   }
