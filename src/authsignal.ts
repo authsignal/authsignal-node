@@ -4,6 +4,8 @@ import {
   AuthsignalConstructor,
   ChallengeRequest,
   ChallengeResponse,
+  DeleteAuthenticatorRequest,
+  DeleteAuthenticatorResponse,
   EnrollVerifiedAuthenticatorRequest,
   EnrollVerifiedAuthenticatorResponse,
   GetActionRequest,
@@ -131,6 +133,18 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, data, config);
+
+    return response.data;
+  }
+
+  public async deleteAuthenticator(request: DeleteAuthenticatorRequest): Promise<DeleteAuthenticatorResponse> {
+    const {userId, userAuthenticatorId} = request;
+
+    const url = `${this.apiBaseUrl}/users/${userId}/authenticators/${userAuthenticatorId}`;
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.delete<DeleteAuthenticatorResponse>(url, config);
 
     return response.data;
   }

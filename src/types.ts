@@ -106,6 +106,15 @@ export interface ValidateChallengeResponse {
   error?: string;
 }
 
+export interface DeleteAuthenticatorRequest {
+  userId: string;
+  userAuthenticatorId: string;
+}
+
+export interface DeleteAuthenticatorResponse {
+  success: boolean;
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
