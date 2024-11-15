@@ -65,13 +65,13 @@ export interface TrackResponse {
   allowedVerificationMethods?: VerificationMethod[];
 }
 
-export interface GetActionRequest {
+export interface ActionRequest {
   userId: string;
   action: string;
   idempotencyKey: string;
 }
 
-export interface GetActionResponse {
+export interface ActionResponse {
   state: UserActionState;
   verificationMethod?: VerificationMethod;
 }
@@ -121,6 +121,9 @@ export enum UserActionState {
   CHALLENGE_REQUIRED = "CHALLENGE_REQUIRED",
   CHALLENGE_SUCCEEDED = "CHALLENGE_SUCCEEDED",
   CHALLENGE_FAILED = "CHALLENGE_FAILED",
+  REVIEW_REQUIRED = "REVIEW_REQUIRED",
+  REVIEW_SUCCEEDED = "REVIEW_SUCCEEDED",
+  REVIEW_FAILED = "REVIEW_FAILED",
 }
 
 export interface UserAuthenticator {
@@ -147,3 +150,10 @@ export enum VerificationMethod {
 }
 
 type CustomData = {[key: string]: string};
+
+export interface UpdateActionStateRequest {
+  userId: string;
+  action: string;
+  idempotencyKey: string;
+  state: UserActionState;
+}

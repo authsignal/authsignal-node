@@ -1,6 +1,8 @@
 import axios from "axios";
 
 import {
+  ActionRequest,
+  ActionResponse,
   AuthsignalConstructor,
   ChallengeRequest,
   ChallengeResponse,
@@ -8,10 +10,9 @@ import {
   DeleteAuthenticatorResponse,
   EnrollVerifiedAuthenticatorRequest,
   EnrollVerifiedAuthenticatorResponse,
-  GetActionRequest,
-  GetActionResponse,
   TrackRequest,
   TrackResponse,
+  UpdateActionStateRequest,
   UpdateUserRequest,
   UserAuthenticator,
   UserRequest,
@@ -103,7 +104,7 @@ export class Authsignal {
     return response.data;
   }
 
-  public async getAction(request: GetActionRequest): Promise<GetActionResponse | undefined> {
+  public async getAction(request: ActionRequest): Promise<ActionResponse | undefined> {
     const {userId, action, idempotencyKey} = request;
 
     const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
@@ -111,7 +112,7 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.get<GetActionResponse>(url, config);
+      const response = await axios.get<ActionResponse>(url, config);
 
       return response.data;
     } catch (err) {
@@ -159,6 +160,18 @@ export class Authsignal {
     const {actionCode: action, ...rest} = response.data;
 
     return {action, ...rest};
+  }
+
+  public async updateActionState(request: UpdateActionStateRequest): Promise<ActionResponse> {
+    const {userId, action, idempotencyKey, state} = request;
+
+    const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.patch<ActionResponse>(url, {state}, config);
+
+    return response.data;
   }
 
   private getBasicAuthConfig() {
