@@ -7,7 +7,6 @@ import {
   ChallengeRequest,
   ChallengeResponse,
   DeleteAuthenticatorRequest,
-  DeleteAuthenticatorResponse,
   EnrollVerifiedAuthenticatorRequest,
   EnrollVerifiedAuthenticatorResponse,
   TrackRequest,
@@ -80,24 +79,28 @@ export class Authsignal {
     return response.data;
   }
 
-  public async getChallenge(request: ChallengeRequest): Promise<ChallengeResponse> {
-    const {userId, action, verificationMethod} = request;
+  public async enrollVerifiedAuthenticator(
+    request: EnrollVerifiedAuthenticatorRequest
+  ): Promise<EnrollVerifiedAuthenticatorResponse> {
+    const {userId, ...data} = request;
 
-    const url = new URL(`${this.apiBaseUrl}/users/${userId}/challenge`);
-
-    if (action) {
-      url.searchParams.set("action", action);
-    }
-
-    if (verificationMethod) {
-      url.searchParams.set("verificationMethod", verificationMethod);
-    }
+    const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<ChallengeResponse>(url.toString(), config);
+    const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, data, config);
 
     return response.data;
+  }
+
+  public async deleteAuthenticator(request: DeleteAuthenticatorRequest): Promise<void> {
+    const {userId, userAuthenticatorId} = request;
+
+    const url = `${this.apiBaseUrl}/users/${userId}/authenticators/${userAuthenticatorId}`;
+
+    const config = this.getBasicAuthConfig();
+
+    await axios.delete(url, config);
   }
 
   public async track(request: TrackRequest): Promise<TrackResponse> {
@@ -112,6 +115,18 @@ export class Authsignal {
     const response = await axios.post<TrackResponse>(url, data, config);
 
     return response.data;
+  }
+
+  public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
+    const url = `${this.apiBaseUrl}/validate`;
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
+
+    const {actionCode: action, ...rest} = response.data;
+
+    return {action, ...rest};
   }
 
   public async getAction(request: ActionRequest): Promise<ActionResponse | undefined> {
@@ -134,44 +149,6 @@ export class Authsignal {
     }
   }
 
-  public async enrollVerifiedAuthenticator(
-    request: EnrollVerifiedAuthenticatorRequest
-  ): Promise<EnrollVerifiedAuthenticatorResponse> {
-    const {userId, ...data} = request;
-
-    const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
-
-    const config = this.getBasicAuthConfig();
-
-    const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, data, config);
-
-    return response.data;
-  }
-
-  public async deleteAuthenticator(request: DeleteAuthenticatorRequest): Promise<DeleteAuthenticatorResponse> {
-    const {userId, userAuthenticatorId} = request;
-
-    const url = `${this.apiBaseUrl}/users/${userId}/authenticators/${userAuthenticatorId}`;
-
-    const config = this.getBasicAuthConfig();
-
-    const response = await axios.delete<DeleteAuthenticatorResponse>(url, config);
-
-    return response.data;
-  }
-
-  public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
-    const url = `${this.apiBaseUrl}/validate`;
-
-    const config = this.getBasicAuthConfig();
-
-    const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
-
-    const {actionCode: action, ...rest} = response.data;
-
-    return {action, ...rest};
-  }
-
   public async updateActionState(request: UpdateActionStateRequest): Promise<ActionResponse> {
     const {userId, action, idempotencyKey, state} = request;
 
@@ -180,6 +157,26 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     const response = await axios.patch<ActionResponse>(url, {state}, config);
+
+    return response.data;
+  }
+
+  public async getChallenge(request: ChallengeRequest): Promise<ChallengeResponse> {
+    const {userId, action, verificationMethod} = request;
+
+    const url = new URL(`${this.apiBaseUrl}/users/${userId}/challenge`);
+
+    if (action) {
+      url.searchParams.set("action", action);
+    }
+
+    if (verificationMethod) {
+      url.searchParams.set("verificationMethod", verificationMethod);
+    }
+
+    const config = this.getBasicAuthConfig();
+
+    const response = await axios.get<ChallengeResponse>(url.toString(), config);
 
     return response.data;
   }
