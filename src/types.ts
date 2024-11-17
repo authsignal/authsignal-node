@@ -111,10 +111,6 @@ export interface DeleteAuthenticatorRequest {
   userAuthenticatorId: string;
 }
 
-export interface DeleteAuthenticatorResponse {
-  success: boolean;
-}
-
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
