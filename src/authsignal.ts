@@ -58,6 +58,16 @@ export class Authsignal {
     return response.data;
   }
 
+  public async deleteUser(request: UserRequest): Promise<void> {
+    const {userId} = request;
+
+    const url = `${this.apiBaseUrl}/users/${userId}`;
+
+    const config = this.getBasicAuthConfig();
+
+    await axios.delete(url, config);
+  }
+
   public async getAuthenticators(request: UserRequest): Promise<UserAuthenticator[]> {
     const {userId} = request;
 
