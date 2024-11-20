@@ -4,7 +4,6 @@ import "dotenv/config";
 
 import {Authsignal, AuthsignalError} from "../src";
 import {UserActionState, VerificationMethod} from "../src/types";
-import exp from "constants";
 
 const apiUrl = process.env.AUTHSIGNAL_API_URL;
 const apiSecretKey = process.env.AUTHSIGNAL_API_SECRET_KEY;
