@@ -15,7 +15,8 @@
   "sideEffects": false,
   "scripts": {
     "lint": "eslint",
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "test": "vitest"
   },
   "dependencies": {
     "axios": "^1.7.2"
@@ -25,13 +26,16 @@
     "@types/node": "^17.0.35",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
+    "dotenv": "^16.4.5",
     "eslint": "^8.15.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.6.2",
     "rollup": "^2.73.0",
     "tslib": "^2.4.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "uuid": "^11.0.3",
+    "vitest": "^2.1.5"
   },
   "files": [
     "dist"
