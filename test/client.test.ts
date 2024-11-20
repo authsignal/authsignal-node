@@ -2,8 +2,9 @@ import {v4} from "uuid";
 import {test, expect, describe} from "vitest";
 import "dotenv/config";
 
-import {Authsignal} from "../src/authsignal";
+import {Authsignal, AuthsignalError} from "../src";
 import {UserActionState, VerificationMethod} from "../src/types";
+import exp from "constants";
 
 const apiUrl = process.env.AUTHSIGNAL_API_URL;
 const apiSecretKey = process.env.AUTHSIGNAL_API_SECRET_KEY;
@@ -158,5 +159,27 @@ describe("authsignal client tests", () => {
 
     expect(actionResponse).toBeDefined();
     expect(actionResponse?.state).toEqual(UserActionState.REVIEW_REQUIRED);
+  });
+
+  test("invalid secret error", async () => {
+    const invalidClient = new Authsignal({secret: "invalid_secret", apiBaseUrl: apiUrl});
+
+    const userRequest = {userId: v4()};
+
+    try {
+      await invalidClient.getUser(userRequest);
+    } catch (ex) {
+      const isAuthsignalError = ex instanceof AuthsignalError;
+
+      const expectedDescription =
+        "The request is unauthorized. Check that your API key and region base URL are correctly configured.";
+
+      expect(isAuthsignalError).toBeTruthy();
+      expect(ex.statusCode).toEqual(401);
+      expect(ex.errorCode).toEqual("unauthorized");
+      expect(ex.errorDescription).toEqual(expectedDescription);
+
+      expect(ex.message).toEqual(`AuthsignalError: 401 - ${expectedDescription}`);
+    }
   });
 });
