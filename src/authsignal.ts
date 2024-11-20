@@ -19,6 +19,7 @@ import {
   ValidateChallengeRequest,
   ValidateChallengeResponse,
 } from "./types";
+import {mapToAuthsignalError} from "./error";
 
 export const DEFAULT_API_BASE_URL = "https://api.authsignal.com/v1";
 
@@ -40,9 +41,13 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<UserResponse>(url, config);
+    try {
+      const response = await axios.get<UserResponse>(url, config);
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async updateUser(request: UpdateUserRequest): Promise<UserResponse> {
@@ -52,9 +57,13 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<UserResponse>(url, data, config);
+    try {
+      const response = await axios.post<UserResponse>(url, data, config);
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async deleteUser(request: UserRequest): Promise<void> {
@@ -64,7 +73,11 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    await axios.delete(url, config);
+    try {
+      await axios.delete(url, config);
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async getAuthenticators(request: UserRequest): Promise<UserAuthenticator[]> {
@@ -74,9 +87,13 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<UserAuthenticator[]>(url, config);
+    try {
+      const response = await axios.get<UserAuthenticator[]>(url, config);
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async enrollVerifiedAuthenticator(
@@ -88,9 +105,13 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, data, config);
+    try {
+      const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, data, config);
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async deleteAuthenticator(request: DeleteAuthenticatorRequest): Promise<void> {
@@ -100,7 +121,11 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    await axios.delete(url, config);
+    try {
+      await axios.delete(url, config);
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async track(request: TrackRequest): Promise<TrackResponse> {
@@ -112,9 +137,13 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<TrackResponse>(url, data, config);
+    try {
+      const response = await axios.post<TrackResponse>(url, data, config);
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
@@ -122,11 +151,15 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
+    try {
+      const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
 
-    const {actionCode: action, ...rest} = response.data;
+      const {actionCode: action, ...rest} = response.data;
 
-    return {action, ...rest};
+      return {action, ...rest};
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async getAction(request: ActionRequest): Promise<ActionResponse | undefined> {
@@ -140,11 +173,11 @@ export class Authsignal {
       const response = await axios.get<ActionResponse>(url, config);
 
       return response.data;
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 404) {
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
         return undefined;
       } else {
-        throw err;
+        throw await mapToAuthsignalError(error);
       }
     }
   }
@@ -156,9 +189,13 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.patch<ActionResponse>(url, {state}, config);
+    try {
+      const response = await axios.patch<ActionResponse>(url, {state}, config);
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   public async getChallenge(request: ChallengeRequest): Promise<ChallengeResponse> {
@@ -176,9 +213,13 @@ export class Authsignal {
 
     const config = this.getBasicAuthConfig();
 
-    const response = await axios.get<ChallengeResponse>(url.toString(), config);
+    try {
+      const response = await axios.get<ChallengeResponse>(url.toString(), config);
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw await mapToAuthsignalError(error);
+    }
   }
 
   private getBasicAuthConfig() {
