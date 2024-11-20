@@ -46,7 +46,7 @@ export class Authsignal {
 
       return response.data;
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -62,7 +62,7 @@ export class Authsignal {
 
       return response.data;
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -76,7 +76,7 @@ export class Authsignal {
     try {
       await axios.delete(url, config);
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -92,7 +92,7 @@ export class Authsignal {
 
       return response.data;
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -110,7 +110,7 @@ export class Authsignal {
 
       return response.data;
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -124,7 +124,7 @@ export class Authsignal {
     try {
       await axios.delete(url, config);
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -142,7 +142,7 @@ export class Authsignal {
 
       return response.data;
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -158,7 +158,7 @@ export class Authsignal {
 
       return {action, ...rest};
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -177,7 +177,7 @@ export class Authsignal {
       if (axios.isAxiosError(error) && error.response?.status === 404) {
         return undefined;
       } else {
-        throw await mapToAuthsignalError(error);
+        throw mapToAuthsignalError(error);
       }
     }
   }
@@ -194,7 +194,7 @@ export class Authsignal {
 
       return response.data;
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 
@@ -218,7 +218,7 @@ export class Authsignal {
 
       return response.data;
     } catch (error) {
-      throw await mapToAuthsignalError(error);
+      throw mapToAuthsignalError(error);
     }
   }
 

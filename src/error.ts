@@ -20,7 +20,7 @@ export class AuthsignalError extends Error {
   }
 }
 
-export async function mapToAuthsignalError(error: unknown): Promise<AuthsignalError> {
+export function mapToAuthsignalError(error: unknown): AuthsignalError {
   if (error instanceof AxiosError) {
     const {response} = error;
 
