@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import {mapToAuthsignalError} from "./error";
 import {
   ActionRequest,
   ActionResponse,
@@ -19,7 +20,6 @@ import {
   ValidateChallengeRequest,
   ValidateChallengeResponse,
 } from "./types";
-import {mapToAuthsignalError} from "./error";
 
 export const DEFAULT_API_BASE_URL = "https://api.authsignal.com/v1";
 
