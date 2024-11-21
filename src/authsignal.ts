@@ -2,47 +2,48 @@ import axios from "axios";
 
 import {mapToAuthsignalError} from "./error";
 import {
-  ActionRequest,
-  ActionResponse,
   AuthsignalConstructor,
-  ChallengeRequest,
-  ChallengeResponse,
+  GetActionRequest,
+  GetActionResponse,
+  GetChallengeRequest,
+  GetChallengeResponse,
   DeleteAuthenticatorRequest,
   EnrollVerifiedAuthenticatorRequest,
   EnrollVerifiedAuthenticatorResponse,
   TrackRequest,
   TrackResponse,
-  UpdateActionStateRequest,
+  UpdateActionRequest,
   UpdateUserRequest,
   UserAuthenticator,
-  UserRequest,
-  UserResponse,
+  GetUserRequest,
+  GetUserResponse,
   ValidateChallengeRequest,
   ValidateChallengeResponse,
+  UserAttributes,
+  DeleteUserRequest,
+  GetAuthenticatorsRequest,
 } from "./types";
 
-export const DEFAULT_API_BASE_URL = "https://api.authsignal.com/v1";
+export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
 export class Authsignal {
-  secret: string;
-  apiBaseUrl: string;
-  redirectUrl?: string;
+  apiSecretKey: string;
+  apiUrl: string;
 
-  constructor({secret, apiBaseUrl, redirectUrl}: AuthsignalConstructor) {
-    this.secret = secret;
-    this.apiBaseUrl = apiBaseUrl ?? DEFAULT_API_BASE_URL;
-    this.redirectUrl = redirectUrl;
+  constructor({apiSecretKey, apiUrl}: AuthsignalConstructor) {
+    this.apiSecretKey = apiSecretKey;
+    this.apiUrl = apiUrl ?? DEFAULT_API_URL;
   }
 
-  public async getUser(request: UserRequest): Promise<UserResponse> {
+  public async getUser(request: GetUserRequest): Promise<GetUserResponse> {
     const {userId} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}`;
+    const url = `${this.apiUrl}/users/${userId}`;
 
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.get<UserResponse>(url, config);
+      const response = await axios.get<GetUserResponse>(url, config);
 
       return response.data;
     } catch (error) {
@@ -50,15 +51,15 @@ export class Authsignal {
     }
   }
 
-  public async updateUser(request: UpdateUserRequest): Promise<UserResponse> {
-    const {userId, ...data} = request;
+  public async updateUser(request: UpdateUserRequest): Promise<UserAttributes> {
+    const {userId, attributes} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}`;
+    const url = `${this.apiUrl}/users/${userId}`;
 
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.post<UserResponse>(url, data, config);
+      const response = await axios.post<UserAttributes>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -66,10 +67,10 @@ export class Authsignal {
     }
   }
 
-  public async deleteUser(request: UserRequest): Promise<void> {
+  public async deleteUser(request: DeleteUserRequest): Promise<void> {
     const {userId} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}`;
+    const url = `${this.apiUrl}/users/${userId}`;
 
     const config = this.getBasicAuthConfig();
 
@@ -80,10 +81,10 @@ export class Authsignal {
     }
   }
 
-  public async getAuthenticators(request: UserRequest): Promise<UserAuthenticator[]> {
+  public async getAuthenticators(request: GetAuthenticatorsRequest): Promise<UserAuthenticator[]> {
     const {userId} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
+    const url = `${this.apiUrl}/users/${userId}/authenticators`;
 
     const config = this.getBasicAuthConfig();
 
@@ -99,14 +100,14 @@ export class Authsignal {
   public async enrollVerifiedAuthenticator(
     request: EnrollVerifiedAuthenticatorRequest
   ): Promise<EnrollVerifiedAuthenticatorResponse> {
-    const {userId, ...data} = request;
+    const {userId, attributes} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}/authenticators`;
+    const url = `${this.apiUrl}/users/${userId}/authenticators`;
 
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, data, config);
+      const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -117,7 +118,7 @@ export class Authsignal {
   public async deleteAuthenticator(request: DeleteAuthenticatorRequest): Promise<void> {
     const {userId, userAuthenticatorId} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}/authenticators/${userAuthenticatorId}`;
+    const url = `${this.apiUrl}/users/${userId}/authenticators/${userAuthenticatorId}`;
 
     const config = this.getBasicAuthConfig();
 
@@ -129,16 +130,14 @@ export class Authsignal {
   }
 
   public async track(request: TrackRequest): Promise<TrackResponse> {
-    const {userId, action, redirectUrl = this.redirectUrl, ...rest} = request;
+    const {userId, action, attributes = {}} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}`;
-
-    const data = {redirectUrl, ...rest};
+    const url = `${this.apiUrl}/users/${userId}/actions/${action}`;
 
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.post<TrackResponse>(url, data, config);
+      const response = await axios.post<TrackResponse>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -147,12 +146,12 @@ export class Authsignal {
   }
 
   public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
-    const url = `${this.apiBaseUrl}/validate`;
+    const url = `${this.apiUrl}/validate`;
 
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
+      const response = await axios.post<ValidateChallengeRawResponse>(url, request.attributes, config);
 
       const {actionCode: action, ...rest} = response.data;
 
@@ -162,35 +161,15 @@ export class Authsignal {
     }
   }
 
-  public async getAction(request: ActionRequest): Promise<ActionResponse | undefined> {
+  public async getAction(request: GetActionRequest): Promise<GetActionResponse> {
     const {userId, action, idempotencyKey} = request;
 
-    const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
+    const url = `${this.apiUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
 
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.get<ActionResponse>(url, config);
-
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        return undefined;
-      } else {
-        throw mapToAuthsignalError(error);
-      }
-    }
-  }
-
-  public async updateActionState(request: UpdateActionStateRequest): Promise<ActionResponse> {
-    const {userId, action, idempotencyKey, state} = request;
-
-    const url = `${this.apiBaseUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
-
-    const config = this.getBasicAuthConfig();
-
-    try {
-      const response = await axios.patch<ActionResponse>(url, {state}, config);
+      const response = await axios.get<GetActionResponse>(url, config);
 
       return response.data;
     } catch (error) {
@@ -198,10 +177,26 @@ export class Authsignal {
     }
   }
 
-  public async getChallenge(request: ChallengeRequest): Promise<ChallengeResponse> {
+  public async updateAction(request: UpdateActionRequest): Promise<GetActionResponse> {
+    const {userId, action, idempotencyKey, attributes} = request;
+
+    const url = `${this.apiUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
+
+    const config = this.getBasicAuthConfig();
+
+    try {
+      const response = await axios.patch<GetActionResponse>(url, attributes, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async getChallenge(request: GetChallengeRequest): Promise<GetChallengeResponse> {
     const {userId, action, verificationMethod} = request;
 
-    const url = new URL(`${this.apiBaseUrl}/users/${userId}/challenge`);
+    const url = new URL(`${this.apiUrl}/users/${userId}/challenge`);
 
     if (action) {
       url.searchParams.set("action", action);
@@ -214,7 +209,7 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.get<ChallengeResponse>(url.toString(), config);
+      const response = await axios.get<GetChallengeResponse>(url.toString(), config);
 
       return response.data;
     } catch (error) {
@@ -225,7 +220,7 @@ export class Authsignal {
   private getBasicAuthConfig() {
     return {
       auth: {
-        username: this.secret,
+        username: this.apiSecretKey,
         password: "",
       },
     };
