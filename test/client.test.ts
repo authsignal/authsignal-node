@@ -208,7 +208,7 @@ describe("authsignal client tests", () => {
 
     for (const authenticator of authenticators) {
       if (authenticator.verificationMethod === VerificationMethod.PASSKEY) {
-        const name = authenticator.webauthnCredential?.aaguidMapping.name;
+        const name = authenticator.webauthnCredential?.aaguidMapping?.name;
 
         expect(name).toBeDefined();
 

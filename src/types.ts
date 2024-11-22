@@ -190,12 +190,12 @@ export interface WebauthnCredential {
   credentialId: string;
   deviceId: string;
   name: string;
-  aaguid: string;
-  aaguidMapping: AaguidMapping;
-  credentialBackedUp: boolean;
-  credentialDeviceType: string;
-  authenticatorAttachment: string;
-  parsedUserAgent: UserAgent;
+  aaguid?: string;
+  aaguidMapping?: AaguidMapping;
+  credentialBackedUp?: boolean;
+  credentialDeviceType?: string;
+  authenticatorAttachment?: string;
+  parsedUserAgent?: UserAgent;
 }
 
 export interface AaguidMapping {
