@@ -133,10 +133,10 @@ export interface UpdateActionRequest {
   userId: string;
   action: string;
   idempotencyKey: string;
-  attributes: UpdateActionAttributes;
+  attributes: ActionAttributes;
 }
 
-export interface UpdateActionAttributes {
+export interface ActionAttributes {
   state: UserActionState;
 }
 
