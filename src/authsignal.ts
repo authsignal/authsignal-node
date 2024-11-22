@@ -22,6 +22,7 @@ import {
   UserAttributes,
   DeleteUserRequest,
   GetAuthenticatorsRequest,
+  UpdateActionAttributes,
 } from "./types";
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
@@ -59,7 +60,7 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.post<UserAttributes>(url, attributes, config);
+      const response = await axios.patch<UserAttributes>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -177,7 +178,7 @@ export class Authsignal {
     }
   }
 
-  public async updateAction(request: UpdateActionRequest): Promise<GetActionResponse> {
+  public async updateAction(request: UpdateActionRequest): Promise<UpdateActionAttributes> {
     const {userId, action, idempotencyKey, attributes} = request;
 
     const url = `${this.apiUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
@@ -185,7 +186,7 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.patch<GetActionResponse>(url, attributes, config);
+      const response = await axios.patch<UpdateActionAttributes>(url, attributes, config);
 
       return response.data;
     } catch (error) {

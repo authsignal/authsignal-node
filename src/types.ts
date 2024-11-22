@@ -61,8 +61,8 @@ export interface TrackAttributes {
 }
 
 export interface TrackResponse {
-  state: UserActionState;
   idempotencyKey: string;
+  state: UserActionState;
   url: string;
   token: string;
   isEnrolled: boolean;
@@ -78,7 +78,11 @@ export interface GetActionRequest {
 
 export interface GetActionResponse {
   state: UserActionState;
+  stateUpdatedAt: string;
+  createdAt: string;
   verificationMethod?: VerificationMethod;
+  rules?: Rule[];
+  output?: ActionOutput;
 }
 
 export interface EnrollVerifiedAuthenticatorRequest {
@@ -99,10 +103,10 @@ export interface EnrollVerifiedAuthenticatorResponse {
 }
 
 export interface ValidateChallengeRequest {
-  attributes: ValidateChallengeRequestAttributes;
+  attributes: ValidateChallengeAttributes;
 }
 
-export interface ValidateChallengeRequestAttributes {
+export interface ValidateChallengeAttributes {
   token: string;
   action?: string;
   userId?: string;
@@ -128,10 +132,10 @@ export interface UpdateActionRequest {
   userId: string;
   action: string;
   idempotencyKey: string;
-  attributes: UpdateActionRequestAttributes;
+  attributes: UpdateActionAttributes;
 }
 
-export interface UpdateActionRequestAttributes {
+export interface UpdateActionAttributes {
   state: UserActionState;
 }
 
@@ -239,3 +243,12 @@ export interface UserAgentOs {
 export interface UserAgentCpu {
   architecture: string;
 }
+
+export interface Rule {
+  ruleId: string;
+  name: string;
+  description?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ActionOutput = any;
