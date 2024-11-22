@@ -68,6 +68,7 @@ export interface TrackResponse {
   isEnrolled: boolean;
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
+  defaultVerificationMethod?: VerificationMethod;
 }
 
 export interface GetActionRequest {
