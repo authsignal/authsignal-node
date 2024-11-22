@@ -18,7 +18,7 @@ if (!apiSecretKey) {
   process.exit(1);
 }
 
-const client = new Authsignal({secret: apiSecretKey, apiBaseUrl: apiUrl});
+const client = new Authsignal({apiSecretKey, apiUrl});
 
 describe("authsignal client tests", () => {
   test("user tests", async () => {
@@ -26,8 +26,10 @@ describe("authsignal client tests", () => {
 
     const enrollRequest = {
       userId,
-      verificationMethod: VerificationMethod.SMS,
-      phoneNumber: "+6427000000",
+      attributes: {
+        verificationMethod: VerificationMethod.SMS,
+        phoneNumber: "+6427000000",
+      },
     };
 
     const enrollResponse = await client.enrollVerifiedAuthenticator(enrollRequest);
@@ -50,11 +52,13 @@ describe("authsignal client tests", () => {
 
     const updateUserRequest = {
       userId,
-      email,
-      phoneNumber,
-      username,
-      displayName,
-      custom,
+      attributes: {
+        email,
+        phoneNumber,
+        username,
+        displayName,
+        custom,
+      },
     };
 
     const updateUserResponse = await client.updateUser(updateUserRequest);
@@ -78,8 +82,10 @@ describe("authsignal client tests", () => {
 
     const enrollRequest = {
       userId,
-      verificationMethod: VerificationMethod.SMS,
-      phoneNumber: "+6427000000",
+      attributes: {
+        verificationMethod: VerificationMethod.SMS,
+        phoneNumber: "+6427000000",
+      },
     };
 
     const enrollResponse = await client.enrollVerifiedAuthenticator(enrollRequest);
@@ -116,8 +122,10 @@ describe("authsignal client tests", () => {
 
     const enrollRequest = {
       userId,
-      verificationMethod: VerificationMethod.SMS,
-      phoneNumber: "+6427000000",
+      attributes: {
+        verificationMethod: VerificationMethod.SMS,
+        phoneNumber: "+6427000000",
+      },
     };
 
     const enrollResponse = await client.enrollVerifiedAuthenticator(enrollRequest);
@@ -131,7 +139,11 @@ describe("authsignal client tests", () => {
     expect(trackResponse).toBeDefined();
     expect(trackResponse.state).toEqual(UserActionState.CHALLENGE_REQUIRED);
 
-    const validateRequest = {token: trackResponse.token};
+    const validateRequest = {
+      attributes: {
+        token: trackResponse.token,
+      },
+    };
 
     const validateResponse = await client.validateChallenge(validateRequest);
 
@@ -141,16 +153,18 @@ describe("authsignal client tests", () => {
     expect(validateResponse.state).toEqual(UserActionState.CHALLENGE_REQUIRED);
     expect(validateResponse.isValid).toBeFalsy();
 
-    const updateActionStateRequest = {
+    const updateActionRequest = {
       userId,
       action,
       idempotencyKey: trackResponse.idempotencyKey,
-      state: UserActionState.REVIEW_REQUIRED,
+      attributes: {
+        state: UserActionState.REVIEW_REQUIRED,
+      },
     };
 
-    const updateActionStateResponse = await client.updateActionState(updateActionStateRequest);
+    const updateActionResponse = await client.updateAction(updateActionRequest);
 
-    expect(updateActionStateResponse).toBeDefined();
+    expect(updateActionResponse).toBeDefined();
 
     const actionRequest = {userId, action, idempotencyKey: trackResponse.idempotencyKey};
 
@@ -161,9 +175,11 @@ describe("authsignal client tests", () => {
   });
 
   test("invalid secret error", async () => {
-    const invalidClient = new Authsignal({secret: "invalid_secret", apiBaseUrl: apiUrl});
+    const invalidClient = new Authsignal({apiSecretKey: "invalid_secret", apiUrl});
 
-    const userRequest = {userId: v4()};
+    const userRequest = {
+      userId: v4(),
+    };
 
     try {
       await invalidClient.getUser(userRequest);
@@ -179,6 +195,31 @@ describe("authsignal client tests", () => {
       expect(ex.errorDescription).toEqual(expectedDescription);
 
       expect(ex.message).toEqual(`AuthsignalError: 401 - ${expectedDescription}`);
+    }
+  });
+
+  test("test passkey authenticator", async () => {
+    const userId = "b60429a1-6288-43dc-80c0-6a3e73dd51b9";
+
+    const userRequest = {userId};
+
+    const authenticators = await client.getAuthenticators(userRequest);
+
+    expect(authenticators).toBeDefined();
+    expect(authenticators.length).toBeGreaterThan(0);
+
+    for (const authenticator of authenticators) {
+      if (authenticator.verificationMethod === VerificationMethod.PASSKEY) {
+        const name = authenticator.webauthnCredential?.aaguidMapping.name;
+
+        expect(name).toBeDefined();
+
+        if (name) {
+          expect(["Google Password Manager", "iCloud Keychain"].includes(name)).toBeTruthy();
+        }
+
+        expect(authenticator.webauthnCredential?.parsedUserAgent?.browser?.name).toEqual("Chrome");
+      }
     }
   });
 });

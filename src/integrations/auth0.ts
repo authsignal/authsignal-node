@@ -1,15 +1,15 @@
-import {Authsignal, DEFAULT_API_BASE_URL} from "../authsignal";
+import {Authsignal, DEFAULT_API_URL} from "../authsignal";
 import {UserActionState} from "../types";
 
 const DEFAULT_ACTION_NAME = "auth0-login";
 
 export interface ExecutePostLoginOptions {
-  secret?: string;
+  apiSecretKey?: string;
+  apiUrl?: string;
   userId?: string;
   action?: string;
   redirectUrl?: string;
   custom?: {[key: string]: string};
-  apiBaseUrl?: string;
   forceEnrollment?: boolean;
 }
 
@@ -22,33 +22,35 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
   }
 
   const {
-    secret = event.secrets.AUTHSIGNAL_SECRET,
+    apiSecretKey = event.secrets.AUTHSIGNAL_SECRET,
     userId = event.user.user_id,
     action = DEFAULT_ACTION_NAME,
     redirectUrl = `https://${event.request.hostname}/continue`,
     custom = {},
-    apiBaseUrl = DEFAULT_API_BASE_URL,
+    apiUrl = DEFAULT_API_URL,
     forceEnrollment = false,
   } = options ?? {};
 
-  const sessionMfaMethod = event.authentication?.methods.find(({name}: {name: string}) => name === apiBaseUrl);
+  const sessionMfaMethod = event.authentication?.methods.find(({name}: {name: string}) => name === apiUrl);
 
   // If user has already completed MFA for the current Auth0 session, don't prompt again
   if (sessionMfaMethod) {
     return;
   }
 
-  const authsignal = new Authsignal({secret, apiBaseUrl});
+  const authsignal = new Authsignal({apiSecretKey, apiUrl});
 
   const result = await authsignal.track({
     action,
     userId,
-    redirectUrl,
-    custom,
-    email: event.user.email,
-    ipAddress: event.request.ip,
-    userAgent: event.request.user_agent,
-    deviceId: event.request.query?.["device_id"],
+    attributes: {
+      redirectUrl,
+      custom,
+      email: event.user.email,
+      ipAddress: event.request.ip,
+      userAgent: event.request.user_agent,
+      deviceId: event.request.query?.["device_id"],
+    },
   });
 
   const {isEnrolled, state, url} = result;
@@ -63,35 +65,36 @@ export async function handleAuth0ExecutePostLogin(event: any, api: any, options:
 }
 
 export interface ContinuePostLoginOptions {
-  tenantId?: string;
-  secret?: string;
+  apiSecretKey?: string;
+  apiUrl?: string;
   userId?: string;
   action?: string;
   failureMessage?: string;
-  apiBaseUrl?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function handleAuth0ContinuePostLogin(event: any, api: any, options: ContinuePostLoginOptions) {
   const {
-    secret = event.secrets.AUTHSIGNAL_SECRET,
+    apiSecretKey = event.secrets.AUTHSIGNAL_SECRET,
     userId = event.user.user_id,
     action = DEFAULT_ACTION_NAME,
     failureMessage = "MFA challenge failed",
-    apiBaseUrl = DEFAULT_API_BASE_URL,
+    apiUrl = DEFAULT_API_URL,
   } = options ?? {};
 
-  const authsignal = new Authsignal({secret, apiBaseUrl});
+  const authsignal = new Authsignal({apiSecretKey, apiUrl});
 
   const result = await authsignal.validateChallenge({
-    token: event.request.query?.["token"],
-    action,
-    userId,
+    attributes: {
+      token: event.request.query?.["token"],
+      action,
+      userId,
+    },
   });
 
   if (result.action !== action || result.state !== UserActionState.CHALLENGE_SUCCEEDED) {
     api.access.deny(failureMessage);
   } else {
-    api.authentication.recordMethod(apiBaseUrl);
+    api.authentication.recordMethod(apiUrl);
   }
 }

@@ -1,46 +1,51 @@
 export interface AuthsignalConstructor {
-  secret: string;
-  apiBaseUrl?: string;
-  redirectUrl?: string;
+  apiSecretKey: string;
+  apiUrl?: string;
 }
 
-export interface UserRequest {
+export interface GetUserRequest {
   userId: string;
 }
 
-export interface UserResponse {
+export interface GetUserResponse {
   isEnrolled: boolean;
   email?: string;
   phoneNumber?: string;
   username?: string;
   displayName?: string;
+  custom?: CustomData;
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
-  custom?: CustomData;
 }
 
 export interface UpdateUserRequest {
   userId: string;
-  email?: string | null;
-  phoneNumber?: string | null;
-  username?: string | null;
-  displayName?: string | null;
+  attributes: UserAttributes;
+}
+
+export interface UserAttributes {
+  email?: string;
+  phoneNumber?: string;
+  username?: string;
+  displayName?: string;
   custom?: CustomData;
 }
 
-export interface ChallengeRequest {
+export interface DeleteUserRequest {
   userId: string;
-  action?: string;
-  verificationMethod?: VerificationMethod;
 }
 
-export interface ChallengeResponse {
-  challengeId?: string;
+export interface GetAuthenticatorsRequest {
+  userId: string;
 }
 
 export interface TrackRequest {
   userId: string;
   action: string;
+  attributes?: TrackAttributes;
+}
+
+export interface TrackAttributes {
   idempotencyKey?: string;
   redirectUrl?: string;
   redirectToSettings?: boolean;
@@ -56,28 +61,37 @@ export interface TrackRequest {
 }
 
 export interface TrackResponse {
-  state: UserActionState;
   idempotencyKey: string;
+  state: UserActionState;
   url: string;
   token: string;
   isEnrolled: boolean;
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
+  defaultVerificationMethod?: VerificationMethod;
 }
 
-export interface ActionRequest {
+export interface GetActionRequest {
   userId: string;
   action: string;
   idempotencyKey: string;
 }
 
-export interface ActionResponse {
+export interface GetActionResponse {
   state: UserActionState;
+  stateUpdatedAt: string;
+  createdAt: string;
   verificationMethod?: VerificationMethod;
+  rules?: Rule[];
+  output?: ActionOutput;
 }
 
 export interface EnrollVerifiedAuthenticatorRequest {
   userId: string;
+  attributes: EnrollVerifiedAuthenticatorAttributes;
+}
+
+export interface EnrollVerifiedAuthenticatorAttributes {
   verificationMethod: VerificationMethod;
   phoneNumber?: string;
   email?: string;
@@ -90,6 +104,10 @@ export interface EnrollVerifiedAuthenticatorResponse {
 }
 
 export interface ValidateChallengeRequest {
+  attributes: ValidateChallengeAttributes;
+}
+
+export interface ValidateChallengeAttributes {
   token: string;
   action?: string;
   userId?: string;
@@ -111,6 +129,27 @@ export interface DeleteAuthenticatorRequest {
   userAuthenticatorId: string;
 }
 
+export interface UpdateActionRequest {
+  userId: string;
+  action: string;
+  idempotencyKey: string;
+  attributes: ActionAttributes;
+}
+
+export interface ActionAttributes {
+  state: UserActionState;
+}
+
+export interface GetChallengeRequest {
+  userId: string;
+  action?: string;
+  verificationMethod?: VerificationMethod;
+}
+
+export interface GetChallengeResponse {
+  challengeId?: string;
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",
@@ -128,8 +167,12 @@ export interface UserAuthenticator {
   verificationMethod: VerificationMethod;
   createdAt: string;
   verifiedAt?: string;
+  lastVerifiedAt?: string;
   phoneNumber?: string;
   email?: string;
+  username?: string;
+  displayName?: string;
+  webauthnCredential?: WebauthnCredential;
 }
 
 export enum VerificationMethod {
@@ -142,14 +185,71 @@ export enum VerificationMethod {
   PUSH = "PUSH",
   VERIFF = "VERIFF",
   IPROOV = "IPROOV",
+  IDVERSE = "IDVERSE",
+  PALM_BIOMETRICS_RR = "PALM_BIOMETRICS_RR",
   RECOVERY_CODE = "RECOVERY_CODE",
+}
+
+export interface WebauthnCredential {
+  credentialId: string;
+  deviceId: string;
+  name: string;
+  aaguid: string;
+  aaguidMapping: AaguidMapping;
+  credentialBackedUp: boolean;
+  credentialDeviceType: string;
+  authenticatorAttachment: string;
+  parsedUserAgent: UserAgent;
+}
+
+export interface AaguidMapping {
+  name: string;
+  svgIconLight: string;
+  svgIconDark: string;
 }
 
 type CustomData = {[key: string]: string};
 
-export interface UpdateActionStateRequest {
-  userId: string;
-  action: string;
-  idempotencyKey: string;
-  state: UserActionState;
+export interface UserAgent {
+  ua: string;
+  browser?: UserAgentBrowser;
+  device?: UserAgentDevice;
+  engine?: UserAgentEngine;
+  os?: UserAgentOs;
+  cpu?: UserAgentCpu;
 }
+
+export interface UserAgentBrowser {
+  name: string;
+  version: string;
+  major: string;
+}
+
+export interface UserAgentDevice {
+  model: string;
+  type: string;
+  vendor: string;
+}
+
+export interface UserAgentEngine {
+  name: string;
+  version: string;
+}
+
+export interface UserAgentOs {
+  name: string;
+  version: string;
+}
+
+export interface UserAgentCpu {
+  architecture: string;
+}
+
+export interface Rule {
+  ruleId: string;
+  name: string;
+  description?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ActionOutput = any;
