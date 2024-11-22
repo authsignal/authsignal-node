@@ -140,9 +140,7 @@ describe("authsignal client tests", () => {
     expect(trackResponse.state).toEqual(UserActionState.CHALLENGE_REQUIRED);
 
     const validateRequest = {
-      attributes: {
-        token: trackResponse.token,
-      },
+      token: trackResponse.token,
     };
 
     const validateResponse = await client.validateChallenge(validateRequest);
@@ -210,7 +208,7 @@ describe("authsignal client tests", () => {
 
     for (const authenticator of authenticators) {
       if (authenticator.verificationMethod === VerificationMethod.PASSKEY) {
-        const name = authenticator.webauthnCredential?.aaguidMapping.name;
+        const name = authenticator.webauthnCredential?.aaguidMapping?.name;
 
         expect(name).toBeDefined();
 

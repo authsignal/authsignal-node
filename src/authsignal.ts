@@ -152,7 +152,7 @@ export class Authsignal {
     const config = this.getBasicAuthConfig();
 
     try {
-      const response = await axios.post<ValidateChallengeRawResponse>(url, request.attributes, config);
+      const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
 
       const {actionCode: action, ...rest} = response.data;
 
