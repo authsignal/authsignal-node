@@ -35,10 +35,6 @@ export interface DeleteUserRequest {
   userId: string;
 }
 
-export interface GetAuthenticatorsRequest {
-  userId: string;
-}
-
 export interface TrackRequest {
   userId: string;
   action: string;
@@ -86,6 +82,10 @@ export interface GetActionResponse {
   output?: ActionOutput;
 }
 
+export interface GetAuthenticatorsRequest {
+  userId: string;
+}
+
 export interface EnrollVerifiedAuthenticatorRequest {
   userId: string;
   attributes: EnrollVerifiedAuthenticatorAttributes;
@@ -104,10 +104,6 @@ export interface EnrollVerifiedAuthenticatorResponse {
 }
 
 export interface ValidateChallengeRequest {
-  attributes: ValidateChallengeAttributes;
-}
-
-export interface ValidateChallengeAttributes {
   token: string;
   action?: string;
   userId?: string;

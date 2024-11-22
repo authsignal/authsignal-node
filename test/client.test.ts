@@ -140,9 +140,7 @@ describe("authsignal client tests", () => {
     expect(trackResponse.state).toEqual(UserActionState.CHALLENGE_REQUIRED);
 
     const validateRequest = {
-      attributes: {
-        token: trackResponse.token,
-      },
+      token: trackResponse.token,
     };
 
     const validateResponse = await client.validateChallenge(validateRequest);
