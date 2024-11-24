@@ -85,11 +85,9 @@ export async function handleAuth0ContinuePostLogin(event: any, api: any, options
   const authsignal = new Authsignal({apiSecretKey, apiUrl});
 
   const result = await authsignal.validateChallenge({
-    attributes: {
-      token: event.request.query?.["token"],
-      action,
-      userId,
-    },
+    token: event.request.query?.["token"],
+    action,
+    userId,
   });
 
   if (result.action !== action || result.state !== UserActionState.CHALLENGE_SUCCEEDED) {
