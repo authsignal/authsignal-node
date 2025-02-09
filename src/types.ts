@@ -1,6 +1,7 @@
 export interface AuthsignalConstructor {
   apiSecretKey: string;
   apiUrl?: string;
+  retries?: number;
 }
 
 export interface GetUserRequest {
