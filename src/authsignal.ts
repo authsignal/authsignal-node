@@ -28,7 +28,7 @@ import {
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const DEFAULT_RETRIES = 3;
+const DEFAULT_RETRIES = 2;
 const MAX_RETRIES = 5;
 
 function isRetryableAuthsignalError(error: AxiosError): boolean {
