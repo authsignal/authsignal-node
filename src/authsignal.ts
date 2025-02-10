@@ -42,15 +42,11 @@ function isRetryableAuthsignalError(error: AxiosError): boolean {
   }
 
   const {method} = error.request;
-  const {status, headers} = error.response;
+  const {status} = error.response;
 
   if (status >= 500 && status <= 599) {
     // Always retry for GET and DELETE requests
     if (method && ["GET", "DELETE"].includes(method)) {
-      return true;
-    }
-
-    if (headers["x-authsignal-should-retry"] === "true") {
       return true;
     }
   }
