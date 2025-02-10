@@ -30,6 +30,7 @@ export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
 const DEFAULT_RETRIES = 1;
 const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
+const SAFE_HTTP_METHODS = ["GET", "HEAD", "OPTIONS"];
 
 function isRetryableAuthsignalError(error: AxiosError): boolean {
   // Retry on connection error
@@ -45,8 +46,7 @@ function isRetryableAuthsignalError(error: AxiosError): boolean {
   const {status} = error.response;
 
   if (status >= 500 && status <= 599) {
-    // Always retry for GET and DELETE requests
-    if (method && ["GET"].includes(method)) {
+    if (method && SAFE_HTTP_METHODS.includes(method)) {
       return true;
     }
   }
