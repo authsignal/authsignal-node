@@ -28,13 +28,34 @@ import {
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const DEFAULT_RETRIES = 2;
-const MAX_RETRIES = 4;
+const DEFAULT_RETRIES = 1;
+const CONNECTION_CLOSED_ERROR_CODES = ["ECONNRESET", "EPIPE"];
 
 function isRetryableAuthsignalError(error: AxiosError): boolean {
-  return (
-    error.code !== "ECONNABORTED" && (!error.response || (error.response.status >= 500 && error.response.status <= 599))
-  );
+  // Retry on connection error
+  if (!error.response) {
+    return true;
+  }
+
+  if (error.code && CONNECTION_CLOSED_ERROR_CODES.includes(error.code)) {
+    return true;
+  }
+
+  const {method} = error.request;
+  const {status, headers} = error.response;
+
+  if (status >= 500 && status <= 599) {
+    // Always retry for GET and DELETE requests
+    if (method && ["GET", "DELETE"].includes(method)) {
+      return true;
+    }
+
+    if (headers["x-authsignal-should-retry"] === "true") {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export class Authsignal {
@@ -45,7 +66,7 @@ export class Authsignal {
     this.apiSecretKey = apiSecretKey;
     this.apiUrl = apiUrl ?? DEFAULT_API_URL;
 
-    const axiosRetries = Math.min(retries ?? DEFAULT_RETRIES, MAX_RETRIES);
+    const axiosRetries = retries ?? DEFAULT_RETRIES;
 
     if (axiosRetries > 0) {
       axiosRetry(axios, {
