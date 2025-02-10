@@ -29,7 +29,7 @@ import {
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
 const DEFAULT_RETRIES = 1;
-const CONNECTION_CLOSED_ERROR_CODES = ["ECONNRESET", "EPIPE"];
+const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ETIMEDOUT", "ECONNREFUSED"];
 
 function isRetryableAuthsignalError(error: AxiosError): boolean {
   // Retry on connection error
@@ -37,7 +37,7 @@ function isRetryableAuthsignalError(error: AxiosError): boolean {
     return true;
   }
 
-  if (error.code && CONNECTION_CLOSED_ERROR_CODES.includes(error.code)) {
+  if (error.code && RETRY_ERROR_CODES.includes(error.code)) {
     return true;
   }
 
