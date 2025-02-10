@@ -46,7 +46,7 @@ function isRetryableAuthsignalError(error: AxiosError): boolean {
 
   if (status >= 500 && status <= 599) {
     // Always retry for GET and DELETE requests
-    if (method && ["GET", "DELETE"].includes(method)) {
+    if (method && ["GET"].includes(method)) {
       return true;
     }
   }
