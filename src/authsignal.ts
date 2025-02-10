@@ -29,7 +29,7 @@ import {
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
 const DEFAULT_RETRIES = 1;
-const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ETIMEDOUT", "ECONNREFUSED"];
+const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
 
 function isRetryableAuthsignalError(error: AxiosError): boolean {
   // Retry on connection error
@@ -260,9 +260,6 @@ export class Authsignal {
       auth: {
         username: this.apiSecretKey,
         password: "",
-      },
-      transitional: {
-        clarifyTimeoutError: true,
       },
     };
   }
