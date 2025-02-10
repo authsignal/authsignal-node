@@ -28,13 +28,30 @@ import {
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const DEFAULT_RETRIES = 2;
-const MAX_RETRIES = 4;
+const DEFAULT_RETRIES = 1;
+const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
+const SAFE_HTTP_METHODS = ["GET", "HEAD", "OPTIONS"];
 
 function isRetryableAuthsignalError(error: AxiosError): boolean {
-  return (
-    error.code !== "ECONNABORTED" && (!error.response || (error.response.status >= 500 && error.response.status <= 599))
-  );
+  // Retry on connection error
+  if (!error.response) {
+    return true;
+  }
+
+  if (error.code && RETRY_ERROR_CODES.includes(error.code)) {
+    return true;
+  }
+
+  const {method} = error.request;
+  const {status} = error.response;
+
+  if (status >= 500 && status <= 599) {
+    if (method && SAFE_HTTP_METHODS.includes(method)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export class Authsignal {
@@ -45,7 +62,7 @@ export class Authsignal {
     this.apiSecretKey = apiSecretKey;
     this.apiUrl = apiUrl ?? DEFAULT_API_URL;
 
-    const axiosRetries = Math.min(retries ?? DEFAULT_RETRIES, MAX_RETRIES);
+    const axiosRetries = retries ?? DEFAULT_RETRIES;
 
     if (axiosRetries > 0) {
       axiosRetry(axios, {
@@ -243,9 +260,6 @@ export class Authsignal {
       auth: {
         username: this.apiSecretKey,
         password: "",
-      },
-      transitional: {
-        clarifyTimeoutError: true,
       },
     };
   }
