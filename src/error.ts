@@ -35,7 +35,7 @@ export function mapToAuthsignalError(error: unknown): AuthsignalError {
     return new AuthsignalError(500, "unexpected_error", error.message);
   }
 
-  return new AuthsignalError(50, "unexpected_error");
+  return new AuthsignalError(500, "unexpected_error");
 }
 
 function formatMessage(statusCode: number, errorCode: string, errorDescription?: string) {

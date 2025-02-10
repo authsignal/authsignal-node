@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, {AxiosError} from "axios";
+import axiosRetry from "axios-retry";
 
 import {mapToAuthsignalError} from "./error";
 import {
@@ -27,13 +28,32 @@ import {
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
+const DEFAULT_RETRIES = 2;
+const MAX_RETRIES = 4;
+
+function isRetryableAuthsignalError(error: AxiosError): boolean {
+  return (
+    error.code !== "ECONNABORTED" && (!error.response || (error.response.status >= 500 && error.response.status <= 599))
+  );
+}
+
 export class Authsignal {
   apiSecretKey: string;
   apiUrl: string;
 
-  constructor({apiSecretKey, apiUrl}: AuthsignalConstructor) {
+  constructor({apiSecretKey, apiUrl, retries}: AuthsignalConstructor) {
     this.apiSecretKey = apiSecretKey;
     this.apiUrl = apiUrl ?? DEFAULT_API_URL;
+
+    const axiosRetries = Math.min(retries ?? DEFAULT_RETRIES, MAX_RETRIES);
+
+    if (axiosRetries > 0) {
+      axiosRetry(axios, {
+        retries: axiosRetries,
+        retryDelay: axiosRetry.exponentialDelay,
+        retryCondition: isRetryableAuthsignalError,
+      });
+    }
   }
 
   public async getUser(request: GetUserRequest): Promise<GetUserResponse> {
@@ -41,7 +61,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.get<GetUserResponse>(url, config);
@@ -57,7 +77,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.patch<UserAttributes>(url, attributes, config);
@@ -73,7 +93,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       await axios.delete(url, config);
@@ -87,7 +107,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/authenticators`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.get<UserAuthenticator[]>(url, config);
@@ -105,7 +125,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/authenticators`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, attributes, config);
@@ -121,7 +141,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/authenticators/${userAuthenticatorId}`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       await axios.delete(url, config);
@@ -135,7 +155,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/actions/${action}`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.post<TrackResponse>(url, attributes, config);
@@ -149,7 +169,7 @@ export class Authsignal {
   public async validateChallenge(request: ValidateChallengeRequest): Promise<ValidateChallengeResponse> {
     const url = `${this.apiUrl}/validate`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
@@ -167,7 +187,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.get<GetActionResponse>(url, config);
@@ -183,7 +203,7 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.patch<ActionAttributes>(url, attributes, config);
@@ -207,7 +227,7 @@ export class Authsignal {
       url.searchParams.set("verificationMethod", verificationMethod);
     }
 
-    const config = this.getBasicAuthConfig();
+    const config = this.getRequestConfig();
 
     try {
       const response = await axios.get<GetChallengeResponse>(url.toString(), config);
@@ -218,11 +238,14 @@ export class Authsignal {
     }
   }
 
-  private getBasicAuthConfig() {
+  private getRequestConfig() {
     return {
       auth: {
         username: this.apiSecretKey,
         password: "",
+      },
+      transitional: {
+        clarifyTimeoutError: true,
       },
     };
   }
