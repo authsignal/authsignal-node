@@ -28,7 +28,7 @@ import {
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const DEFAULT_RETRIES = 1;
+const DEFAULT_RETRIES = 2;
 const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
 const SAFE_HTTP_METHODS = ["GET", "HEAD", "OPTIONS"];
 
