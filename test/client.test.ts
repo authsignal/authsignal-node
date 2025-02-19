@@ -220,4 +220,65 @@ describe("authsignal client tests", () => {
       }
     }
   });
+
+  describe("webhook tests", () => {
+    const payload = JSON.stringify({
+      version: 2,
+      id: "5b9e82e8-4748-47d5-be1c-bfdb3dcc75d2",
+      source: "https://authsignal.com",
+      time: "2025-02-19T21:12:47.498Z",
+      tenantId: "7752d28e-e627-4b1b-bb81-b45d68d617bc",
+      type: "email.created",
+      data: {
+        to: "chris@authsignal.com",
+        code: "115909",
+        userId: "b9f74d36-fcfc-4efc-87f1-3664ab5a7fb0",
+        actionCode: "accountRecovery",
+        idempotencyKey: "2c51f538-bd09-4d21-b2e5-741c5d5b165b",
+        verificationMethod: "EMAIL_OTP",
+      },
+    });
+
+    test("test invalid signature format", async () => {
+      const signature = "123";
+
+      try {
+        client.webhook.constructEvent(payload, signature);
+      } catch (ex) {
+        expect(ex.message).toEqual("Signature format is invalid.");
+      }
+    });
+
+    test("test timestamp tolerance error", async () => {
+      const signature = "t=1630000000,v1=invalid_signature";
+
+      try {
+        client.webhook.constructEvent(payload, signature);
+      } catch (ex) {
+        expect(ex.message).toEqual("Timestamp is outside the tolerance zone.");
+      }
+    });
+
+    test("test invalid computed signature", async () => {
+      const timestamp = Math.floor(Date.now() / 1000);
+      const signature = `t=${timestamp},v1=invalid_signature`;
+
+      try {
+        client.webhook.constructEvent(payload, signature);
+      } catch (ex) {
+        expect(ex.message).toEqual("Signature mismatch.");
+      }
+    });
+
+    test("test valid signature", async () => {
+      // Ignore tolerance window
+      client.webhook.tolerance = -1;
+
+      const signature = "t=1739999567,v2=c2gbglCgf4fpNFg9B7dE4g9DlJjmgUFpq4CwGeyA+Uw";
+
+      const event = client.webhook.constructEvent(payload, signature);
+
+      expect(event).toBeDefined();
+    });
+  });
 });
