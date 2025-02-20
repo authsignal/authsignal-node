@@ -250,7 +250,7 @@ describe("authsignal client tests", () => {
     });
 
     test("test timestamp tolerance error", async () => {
-      const signature = "t=1630000000,v1=invalid_signature";
+      const signature = "t=1630000000,v2=invalid_signature";
 
       try {
         client.webhook.constructEvent(payload, signature);
@@ -261,7 +261,7 @@ describe("authsignal client tests", () => {
 
     test("test invalid computed signature", async () => {
       const timestamp = Math.floor(Date.now() / 1000);
-      const signature = `t=${timestamp},v1=invalid_signature`;
+      const signature = `t=${timestamp},v2=invalid_signature`;
 
       try {
         client.webhook.constructEvent(payload, signature);

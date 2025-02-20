@@ -29,7 +29,15 @@ export class Webhook {
       .digest("base64")
       .replace("=", "");
 
-    if (parsedSignature.signature !== computedSignature) {
+    let match = false;
+
+    for (const signature of parsedSignature.signatures) {
+      if (signature === computedSignature) {
+        match = true;
+      }
+    }
+
+    if (!match) {
       throw new InvalidSignatureError("Signature mismatch.");
     }
 
@@ -37,23 +45,35 @@ export class Webhook {
   }
 
   parseSignature(value: string): SignatureHeaderData {
-    try {
-      const parts = value.split(",");
+    const parsedValue = value?.split(",").reduce<SignatureHeaderData>(
+      (acc, item) => {
+        const kv = item.split("=");
 
-      const timestamp = parts[0].split("=")[1];
-      const parsedTimestamp = parseInt(timestamp);
+        if (kv[0] === "t") {
+          acc.timestamp = parseInt(kv[1], 10);
+        }
 
-      const signature = parts[1].split("=")[1];
+        if (kv[0] === VERSION) {
+          acc.signatures.push(kv[1]);
+        }
 
-      return {
-        signature,
-        timestamp: parsedTimestamp,
-      };
-    } catch (ex) {
+        return acc;
+      },
+      {
+        timestamp: -1,
+        signatures: [],
+      }
+    );
+
+    if (!parsedValue || parsedValue.timestamp === -1 || parsedValue.signatures.length === 0) {
       throw new Error("Signature format is invalid.");
     }
+
+    return parsedValue;
   }
 }
+
+const VERSION = "v2";
 
 type WebhookPayload = string;
 
@@ -67,10 +87,10 @@ type WebhookEvent = {
   data: unknown;
 };
 
-type SignatureHeaderData = {
-  signature: string;
+interface SignatureHeaderData {
+  signatures: string[];
   timestamp: number;
-};
+}
 
 class InvalidSignatureError extends Error {
   constructor(message: string) {
