@@ -66,7 +66,7 @@ export class Webhook {
     );
 
     if (!parsedValue || parsedValue.timestamp === -1 || parsedValue.signatures.length === 0) {
-      throw new Error("Signature format is invalid.");
+      throw new InvalidSignatureError("Signature format is invalid.");
     }
 
     return parsedValue;
