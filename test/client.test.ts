@@ -276,11 +276,11 @@ describe("webhook tests", () => {
     });
 
     // Ignore tolerance window
-    client.webhook.tolerance = -1;
+    const tolerance = -1;
 
     const signature = "t=1740016316,v2=NwFcIT68pK7g+m365Jj4euXj/ke3GSnkTpMPcRVi5q4";
 
-    const event = client.webhook.constructEvent(payload, signature);
+    const event = client.webhook.constructEvent(payload, signature, tolerance);
 
     expect(event).toBeDefined();
   });
@@ -304,12 +304,12 @@ describe("webhook tests", () => {
     });
 
     // Ignore tolerance window
-    client.webhook.tolerance = -1;
+    const tolerance = -1;
 
     const signature =
       "t=1740016037,v2=zI5rg1XJtKH8dXTX9VCSwy07qTPJliXkK9ppgNjmzqw,v2=KMg8mXXGO/SmNNmcszKXI4UaEVHLc21YNWthHfispQo";
 
-    const event = client.webhook.constructEvent(payload, signature);
+    const event = client.webhook.constructEvent(payload, signature, tolerance);
 
     expect(event).toBeDefined();
   });

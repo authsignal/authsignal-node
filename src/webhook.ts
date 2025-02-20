@@ -6,19 +6,17 @@ const DEFAULT_TOLERANCE = 5;
 
 export class Webhook {
   apiSecretKey: string;
-  tolerance: number;
 
-  constructor(apiSecretKey: string, tolerance?: number) {
+  constructor(apiSecretKey: string) {
     this.apiSecretKey = apiSecretKey;
-    this.tolerance = tolerance ?? DEFAULT_TOLERANCE;
   }
 
-  constructEvent(payload: WebhookPayload, signature: string): WebhookEvent {
+  constructEvent(payload: WebhookPayload, signature: string, tolerance: number = DEFAULT_TOLERANCE): WebhookEvent {
     const parsedSignature = this.parseSignature(signature);
 
     const secondsSinceEpoch = Math.round(Date.now() / 1000);
 
-    if (this.tolerance > 0 && parsedSignature.timestamp < secondsSinceEpoch - this.tolerance * 60) {
+    if (tolerance > 0 && parsedSignature.timestamp < secondsSinceEpoch - tolerance * 60) {
       throw new InvalidSignatureError("Timestamp is outside the tolerance zone.");
     }
 
