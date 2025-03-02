@@ -25,6 +25,7 @@ import {
   GetAuthenticatorsRequest,
   ActionAttributes,
 } from "./types";
+import {Webhook} from "./webhook";
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
@@ -57,6 +58,7 @@ function isRetryableAuthsignalError(error: AxiosError): boolean {
 export class Authsignal {
   apiSecretKey: string;
   apiUrl: string;
+  webhook: Webhook;
 
   constructor({apiSecretKey, apiUrl, retries}: AuthsignalConstructor) {
     this.apiSecretKey = apiSecretKey;
@@ -71,6 +73,8 @@ export class Authsignal {
         retryCondition: isRetryableAuthsignalError,
       });
     }
+
+    this.webhook = new Webhook(apiSecretKey);
   }
 
   public async getUser(request: GetUserRequest): Promise<GetUserResponse> {

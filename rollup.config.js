@@ -13,5 +13,5 @@ export default {
     },
   ],
   plugins: [typescript()],
-  external: ["axios", "axios-retry"],
+  external: ["axios", "axios-retry", "crypto"],
 };
