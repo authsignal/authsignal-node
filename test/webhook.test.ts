@@ -79,6 +79,10 @@ describe("authsignal webhook tests", () => {
     const event = client.webhook.constructEvent(payload, signature, tolerance);
 
     expect(event).toBeDefined();
+
+    expect(event.version).toEqual(1);
+
+    expect(event.data.actionCode).toEqual("accountRecovery");
   });
 
   test("test valid signature when 2 API keys active", async () => {
