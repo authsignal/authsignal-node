@@ -85,7 +85,7 @@ export type WebhookEvent = {
   data: WebhookEventData;
 };
 
-export type WebhookEventData = {[key: string]: string};
+export type WebhookEventData = Record<string, string>;
 
 interface SignatureHeaderData {
   signatures: string[];
