@@ -73,17 +73,19 @@ export class Webhook {
 
 const VERSION = "v2";
 
-type WebhookPayload = string;
+export type WebhookPayload = string;
 
-type WebhookEvent = {
+export type WebhookEvent = {
   version: number;
   type: string;
   id: string;
   source: string;
   time: string;
   tenantId: string;
-  data: unknown;
+  data: WebhookEventData;
 };
+
+export type WebhookEventData = {[key: string]: string};
 
 interface SignatureHeaderData {
   signatures: string[];
