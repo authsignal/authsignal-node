@@ -1,4 +1,6 @@
-# authsignal-node
+<img width="1070" alt="Authsignal" src="https://raw.githubusercontent.com/authsignal/authsignal-node/main/.github/images/authsignal.png">
+
+# Authsignal Node.js SDK
 
 The Authsignal Node.js library for server-side applications.
 
