@@ -1,5 +1,6 @@
 import axios, {AxiosError} from "axios";
 import axiosRetry from "axios-retry";
+import pkg from "../package.json";
 
 import {mapToAuthsignalError} from "./error";
 import {
@@ -264,6 +265,9 @@ export class Authsignal {
       auth: {
         username: this.apiSecretKey,
         password: "",
+      },
+      headers: {
+        "X-Authsignal-Version": pkg.version,
       },
     };
   }
