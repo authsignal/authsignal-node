@@ -1,6 +1,10 @@
 name-template: "v$RESOLVED_VERSION 🚀"
 tag-template: "v$RESOLVED_VERSION"
 categories:
+  - title: "⚠️ Breaking Changes"
+    labels:
+      - "breaking"
+      - "major"
   - title: "🚀 Features"
     labels:
       - "feature"
@@ -56,7 +60,7 @@ autolabeler:
       - '/fix\/.+/'
     title:
       - "/fix/i"
-  - label: "enhancement"
+  - label: "feature"
     branch:
       - '/feature\/.+/'
   - label: "dependencies"
@@ -69,26 +73,3 @@ template: |
   $CHANGES
 
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
-
-  ## Installation
-
-  ```bash
-  npm install @authsignal/node
-  ```
-
-  or
-
-  ```bash
-  yarn add @authsignal/node
-  ``` 
-
-  or
-  ```bash
-  pnpm add @authsignal/node
-  ```
-
-  or
-
-  ```bash
-  bun add @authsignal/node
-  ```
