@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
@@ -23,4 +22,4 @@ jobs:
         with:
           config-name: release-drafter-config.yml
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
