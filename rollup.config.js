@@ -1,4 +1,3 @@
-import json from "@rollup/plugin-json";
 import typescript from "@rollup/plugin-typescript";
 
 export default {
@@ -13,6 +12,6 @@ export default {
       format: "esm",
     },
   ],
-  plugins: [json(), typescript()],
+  plugins: [typescript()],
   external: ["axios", "axios-retry", "crypto"],
 };

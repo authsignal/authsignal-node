@@ -1,6 +1,5 @@
 import axios, {AxiosError} from "axios";
 import axiosRetry from "axios-retry";
-import pkg from "../package.json";
 
 import {mapToAuthsignalError} from "./error";
 import {
@@ -29,6 +28,8 @@ import {
 import {Webhook} from "./webhook";
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
+
+const VERSION = "2.3.2";
 
 const DEFAULT_RETRIES = 2;
 const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
@@ -267,7 +268,7 @@ export class Authsignal {
         password: "",
       },
       headers: {
-        "X-Authsignal-Version": pkg.version,
+        "X-Authsignal-Version": VERSION,
       },
     };
   }
