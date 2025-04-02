@@ -268,6 +268,7 @@ export class Authsignal {
       },
       headers: {
         "X-Authsignal-Version": pkg.version,
+        "User-Agent": "authsignal-node",
       },
     };
   }
