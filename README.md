@@ -19,6 +19,16 @@ Using yarn:
 yarn add @authsignal/node
 ```
 
+Using pnpm:
+```bash
+pnpm add @authsignal/node
+```
+
+Using bun:
+```bash
+bun add @authsignal/node
+```
+
 ## Getting Started
 
 Initialize the Authsignal client with your secret key from the [Authsignal Portal](https://portal.authsignal.com/) and the API URL for your region.
@@ -53,7 +63,6 @@ const result = await authsignal.track({
   action: "signIn", // Your custom action code defined in Authsignal
   attributes: {
     redirectUrl: "https://yourapp.com/callback", // URL to redirect after challenge completion
-    // Add any other relevant contextual data if needed
   },
 });
 
@@ -274,4 +283,4 @@ This SDK is licensed under the [MIT License](LICENSE.md).
 
 ## Documentation
 
-For comprehensive information, guides, and advanced usage examples, refer to the official [Authsignal Server-Side SDK documentation](https://docs.authsignal.com/sdks/server/overview).
+For more information and advanced usage examples, refer to the official [Authsignal Server-Side SDK documentation](https://docs.authsignal.com/sdks/server/overview).
