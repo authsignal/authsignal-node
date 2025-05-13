@@ -11,12 +11,34 @@ export interface GetUserRequest {
 export interface GetUserResponse {
   isEnrolled: boolean;
   email?: string;
+  emailVerified: boolean;
   phoneNumber?: string;
+  phoneNumberVerified: boolean;
   username?: string;
   displayName?: string;
   custom?: CustomData;
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
+}
+
+export interface QueryUsersRequest {
+  username?: string;
+  email?: string;
+  phoneNumber?: string;
+  limit?: number;
+  lastEvaluatedUserId?: string;
+}
+
+export interface QueryUsersResponse {
+  users: {
+    userId: string;
+    email?: string;
+    emailVerified: boolean;
+    phoneNumber?: string;
+    phoneNumberVerified: boolean;
+    username?: string;
+  }[];
+  lastEvaluatedUserId?: string;
 }
 
 export interface UpdateUserRequest {
@@ -26,7 +48,9 @@ export interface UpdateUserRequest {
 
 export interface UserAttributes {
   email?: string;
+  emailVerified?: boolean;
   phoneNumber?: string;
+  phoneNumberVerified?: boolean;
   username?: string;
   displayName?: string;
   custom?: CustomData;
@@ -82,6 +106,24 @@ export interface GetActionResponse {
   rules?: Rule[];
   output?: ActionOutput;
 }
+
+export interface QueryUserActionsRequest {
+  userId: string;
+  fromDate?: string;
+  actionCodes?: string[];
+  state?: UserActionState;
+}
+
+export type QueryUserActionsResponse = {
+  actionCode: string;
+  idempotencyKey: string;
+  createdAt: string;
+  updatedAt?: string;
+  state: string;
+  stateUpdatedAt?: string;
+  verificationMethod?: VerificationMethod;
+  verifiedByAuthenticatorId?: string;
+}[];
 
 export interface GetAuthenticatorsRequest {
   userId: string;

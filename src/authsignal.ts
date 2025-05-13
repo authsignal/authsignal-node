@@ -24,6 +24,10 @@ import {
   DeleteUserRequest,
   GetAuthenticatorsRequest,
   ActionAttributes,
+  QueryUsersRequest,
+  QueryUsersResponse,
+  QueryUserActionsRequest,
+  QueryUserActionsResponse,
 } from "./types";
 import {Webhook} from "./webhook";
 
@@ -88,6 +92,42 @@ export class Authsignal {
 
     try {
       const response = await axios.get<GetUserResponse>(url, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async queryUsers(request: QueryUsersRequest): Promise<QueryUsersResponse> {
+    const {username, email, phoneNumber, limit, lastEvaluatedUserId} = request;
+
+    const url = new URL(`${this.apiUrl}/users`);
+
+    if (username) {
+      url.searchParams.set("username", username);
+    }
+
+    if (email) {
+      url.searchParams.set("email", email);
+    }
+
+    if (phoneNumber) {
+      url.searchParams.set("phoneNumber", phoneNumber);
+    }
+
+    if (limit) {
+      url.searchParams.set("limit", limit.toString());
+    }
+
+    if (lastEvaluatedUserId) {
+      url.searchParams.set("lastEvaluatedUserId", lastEvaluatedUserId);
+    }
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.get<QueryUsersResponse>(url.toString(), config);
 
       return response.data;
     } catch (error) {
@@ -214,6 +254,34 @@ export class Authsignal {
 
     try {
       const response = await axios.get<GetActionResponse>(url, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async queryUserActions(request: QueryUserActionsRequest): Promise<QueryUserActionsResponse> {
+    const {userId, fromDate, actionCodes = [], state} = request;
+
+    const url = new URL(`${this.apiUrl}/users/${userId}/actions`);
+
+    if (fromDate) {
+      url.searchParams.set("fromDate", fromDate);
+    }
+
+    if (actionCodes.length > 0) {
+      url.searchParams.set("codes", actionCodes.join(","));
+    }
+
+    if (state) {
+      url.searchParams.set("state", state);
+    }
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.get<QueryUserActionsResponse>(url.toString(), config);
 
       return response.data;
     } catch (error) {
