@@ -100,7 +100,7 @@ export class Authsignal {
   }
 
   public async queryUsers(request: QueryUsersRequest): Promise<QueryUsersResponse> {
-    const {username, email, phoneNumber, limit, lastEvaluatedUserId} = request;
+    const {username, email, phoneNumber, token, limit, lastEvaluatedUserId} = request;
 
     const url = new URL(`${this.apiUrl}/users`);
 
@@ -114,6 +114,10 @@ export class Authsignal {
 
     if (phoneNumber) {
       url.searchParams.set("phoneNumber", phoneNumber);
+    }
+
+    if (token) {
+      url.searchParams.set("token", token);
     }
 
     if (limit) {

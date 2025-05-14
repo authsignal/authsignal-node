@@ -25,6 +25,7 @@ export interface QueryUsersRequest {
   username?: string;
   email?: string;
   phoneNumber?: string;
+  token?: string;
   limit?: number;
   lastEvaluatedUserId?: string;
 }
