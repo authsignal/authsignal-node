@@ -40,6 +40,7 @@ export interface QueryUsersResponse {
     username?: string;
   }[];
   lastEvaluatedUserId?: string;
+  tokenPayload?: TokenPayload;
 }
 
 export interface UpdateUserRequest {
@@ -293,3 +294,6 @@ export interface Rule {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ActionOutput = any;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TokenPayload = any;
