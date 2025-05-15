@@ -54,7 +54,9 @@ describe("authsignal client tests", () => {
       userId,
       attributes: {
         email,
+        emailVerified: true,
         phoneNumber,
+        phoneNumberVerified: false,
         username,
         displayName,
         custom,
@@ -65,7 +67,9 @@ describe("authsignal client tests", () => {
 
     expect(updateUserResponse).toBeDefined();
     expect(updateUserResponse.email).toEqual(email);
+    expect(updateUserResponse.emailVerified).toBeTruthy();
     expect(updateUserResponse.phoneNumber).toEqual(phoneNumber);
+    expect(updateUserResponse.phoneNumberVerified).toBeFalsy();
     expect(updateUserResponse.username).toEqual(username);
     expect(updateUserResponse.displayName).toEqual(displayName);
     expect(updateUserResponse.custom?.foo).toEqual("bar");
