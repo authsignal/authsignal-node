@@ -28,6 +28,13 @@ import {
   QueryUsersResponse,
   QueryUserActionsRequest,
   QueryUserActionsResponse,
+  ClaimChallengeRequest,
+  ClaimChallengeResponse,
+  ChallengeRequest,
+  ChallengeResponse,
+  VerifyRequest,
+  VerifyResponse,
+  VerificationMethod,
 } from "./types";
 import {Webhook} from "./webhook";
 
@@ -249,6 +256,20 @@ export class Authsignal {
     }
   }
 
+  public async claimChallenge(request: ClaimChallengeRequest): Promise<ClaimChallengeResponse> {
+    const url = `${this.apiUrl}/claim`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<ClaimChallengeResponse>(url, request, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
   public async getAction(request: GetActionRequest): Promise<GetActionResponse> {
     const {userId, action, idempotencyKey} = request;
 
@@ -302,6 +323,36 @@ export class Authsignal {
 
     try {
       const response = await axios.patch<ActionAttributes>(url, attributes, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async challenge(request: ChallengeRequest): Promise<ChallengeResponse> {
+    const url = `${this.apiUrl}/challenge/${request.email ? "email" : "sms"}`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<ChallengeResponse>(url, request, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async verify(request: VerifyRequest): Promise<VerifyResponse> {
+    const {verificationMethod, ...data} = request;
+
+    const url = `${this.apiUrl}/verify/${verificationMethod === VerificationMethod.EMAIL_OTP ? "email" : "sms"}`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<VerifyResponse>(url, data, config);
 
       return response.data;
     } catch (error) {
