@@ -165,6 +165,15 @@ export interface ValidateChallengeResponse {
   error?: string;
 }
 
+export interface ClaimChallengeRequest {
+  challengeId: string;
+  userId: string;
+}
+
+export interface ClaimChallengeResponse {
+  token: string;
+}
+
 export interface DeleteAuthenticatorRequest {
   userId: string;
   userAuthenticatorId: string;
@@ -189,6 +198,27 @@ export interface GetChallengeRequest {
 
 export interface GetChallengeResponse {
   challengeId?: string;
+}
+
+export interface ChallengeRequest {
+  action: string;
+  email?: string;
+  phoneNumber?: string;
+  smsChannel?: SmsChannel;
+}
+
+export interface ChallengeResponse {
+  challengeId: string;
+}
+
+export interface VerifyRequest {
+  challengeId: string;
+  verificationMethod: VerificationMethod.SMS | VerificationMethod.EMAIL_OTP;
+  verificationCode: string;
+}
+
+export interface VerifyResponse {
+  isVerified: boolean;
 }
 
 export enum UserActionState {
@@ -290,6 +320,11 @@ export interface Rule {
   ruleId: string;
   name: string;
   description?: string;
+}
+
+export enum SmsChannel {
+  WHATSAPP = "WHATSAPP",
+  DEFAULT = "DEFAULT",
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
