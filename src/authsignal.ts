@@ -34,13 +34,12 @@ import {
   ChallengeResponse,
   VerifyRequest,
   VerifyResponse,
-  VerificationMethod,
 } from "./types";
 import {Webhook} from "./webhook";
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const VERSION = "2.3.2";
+const VERSION = "2.5.1";
 
 const DEFAULT_RETRIES = 2;
 const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
@@ -331,7 +330,7 @@ export class Authsignal {
   }
 
   public async challenge(request: ChallengeRequest): Promise<ChallengeResponse> {
-    const url = `${this.apiUrl}/challenge/${request.email ? "email" : "sms"}`;
+    const url = `${this.apiUrl}/challenge`;
 
     const config = this.getRequestConfig();
 
@@ -345,14 +344,12 @@ export class Authsignal {
   }
 
   public async verify(request: VerifyRequest): Promise<VerifyResponse> {
-    const {verificationMethod, ...data} = request;
-
-    const url = `${this.apiUrl}/verify/${verificationMethod === VerificationMethod.EMAIL_OTP ? "email" : "sms"}`;
+    const url = `${this.apiUrl}/verify`;
 
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<VerifyResponse>(url, data, config);
+      const response = await axios.post<VerifyResponse>(url, request, config);
 
       return response.data;
     } catch (error) {

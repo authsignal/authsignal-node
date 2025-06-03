@@ -201,6 +201,7 @@ export interface GetChallengeResponse {
 }
 
 export interface ChallengeRequest {
+  verificationMethod: VerificationMethod.SMS | VerificationMethod.EMAIL_OTP;
   action: string;
   email?: string;
   phoneNumber?: string;
@@ -213,7 +214,6 @@ export interface ChallengeResponse {
 
 export interface VerifyRequest {
   challengeId: string;
-  verificationMethod: VerificationMethod.SMS | VerificationMethod.EMAIL_OTP;
   verificationCode: string;
 }
 
