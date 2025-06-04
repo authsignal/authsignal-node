@@ -219,6 +219,8 @@ export interface VerifyRequest {
 
 export interface VerifyResponse {
   isVerified: boolean;
+  email?: string;
+  phoneNumber?: string;
 }
 
 export enum UserActionState {
