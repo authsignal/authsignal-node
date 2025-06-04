@@ -39,7 +39,7 @@ import {Webhook} from "./webhook";
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const VERSION = "2.5.1";
+const VERSION = "2.5.2";
 
 const DEFAULT_RETRIES = 2;
 const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
@@ -389,6 +389,7 @@ export class Authsignal {
       },
       headers: {
         "X-Authsignal-Version": VERSION,
+        "User-Agent": "authsignal-node",
       },
     };
   }
