@@ -172,6 +172,7 @@ export interface ClaimChallengeRequest {
 
 export interface ClaimChallengeResponse {
   token: string;
+  verificationMethod: VerificationMethod;
 }
 
 export interface DeleteAuthenticatorRequest {
@@ -191,13 +192,20 @@ export interface ActionAttributes {
 }
 
 export interface GetChallengeRequest {
-  userId: string;
+  challengeId?: string;
+  userId?: string;
   action?: string;
   verificationMethod?: VerificationMethod;
 }
 
 export interface GetChallengeResponse {
   challengeId?: string;
+  expiresAt?: number;
+  verificationMethod?: VerificationMethod;
+  smsChannel?: SmsChannel;
+  phoneNumber?: string;
+  email?: string;
+  action?: string;
 }
 
 export interface ChallengeRequest {
@@ -221,6 +229,7 @@ export interface VerifyResponse {
   isVerified: boolean;
   email?: string;
   phoneNumber?: string;
+  verificationMethod?: "SMS" | "EMAIL_OTP";
 }
 
 export enum UserActionState {
