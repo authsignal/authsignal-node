@@ -232,6 +232,37 @@ export interface VerifyResponse {
   verificationMethod?: "SMS" | "EMAIL_OTP";
 }
 
+export interface CreateSessionRequest {
+  clientId: string;
+  token: string;
+}
+
+export interface CreateSessionResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface ValidateSessionRequest {
+  accessToken: string;
+}
+
+export interface ValidateSessionResponse {
+  user: {userId: string} & UserAttributes;
+  expiresAt: number;
+}
+
+export interface RefreshSessionRequest {
+  refreshToken: string;
+}
+
+export interface RefreshSessionResponse {
+  accessToken: string;
+}
+
+export interface RevokeSessionRequest {
+  accessToken: string;
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",

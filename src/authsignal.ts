@@ -34,12 +34,19 @@ import {
   ChallengeResponse,
   VerifyRequest,
   VerifyResponse,
+  CreateSessionRequest,
+  CreateSessionResponse,
+  ValidateSessionRequest,
+  ValidateSessionResponse,
+  RefreshSessionRequest,
+  RefreshSessionResponse,
+  RevokeSessionRequest,
 } from "./types";
 import {Webhook} from "./webhook";
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const VERSION = "2.6.0";
+const VERSION = "2.7.0";
 
 const DEFAULT_RETRIES = 2;
 const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
@@ -384,6 +391,60 @@ export class Authsignal {
       const response = await axios.get<GetChallengeResponse>(url.toString(), config);
 
       return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async createSession(request: CreateSessionRequest): Promise<CreateSessionResponse> {
+    const url = `${this.apiUrl}/sessions`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<CreateSessionResponse>(url, request, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async validateSession(request: ValidateSessionRequest): Promise<ValidateSessionResponse> {
+    const url = `${this.apiUrl}/sessions/validate`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<ValidateSessionResponse>(url, request, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async refreshSession(request: RefreshSessionRequest): Promise<RefreshSessionResponse> {
+    const url = `${this.apiUrl}/sessions/refresh`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<RefreshSessionResponse>(url, request, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async revokeSession(request: RevokeSessionRequest): Promise<void> {
+    const url = `${this.apiUrl}/sessions/revoke`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      await axios.post(url, request, config);
     } catch (error) {
       throw mapToAuthsignalError(error);
     }
