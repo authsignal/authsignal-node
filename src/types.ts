@@ -257,6 +257,7 @@ export interface RefreshSessionRequest {
 
 export interface RefreshSessionResponse {
   accessToken: string;
+  refreshToken: string;
 }
 
 export interface RevokeSessionRequest {
