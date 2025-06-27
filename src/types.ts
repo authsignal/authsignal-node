@@ -243,6 +243,7 @@ export interface CreateSessionResponse {
 }
 
 export interface ValidateSessionRequest {
+  clientId: string;
   accessToken: string;
 }
 
