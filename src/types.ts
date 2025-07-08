@@ -265,6 +265,10 @@ export interface RevokeSessionRequest {
   accessToken: string;
 }
 
+export interface RevokeUserSessionsRequest {
+  userId: string;
+}
+
 export enum UserActionState {
   ALLOW = "ALLOW",
   BLOCK = "BLOCK",

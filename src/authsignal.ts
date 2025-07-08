@@ -41,12 +41,13 @@ import {
   RefreshSessionRequest,
   RefreshSessionResponse,
   RevokeSessionRequest,
+  RevokeUserSessionsRequest,
 } from "./types";
 import {Webhook} from "./webhook";
 
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-const VERSION = "2.7.3";
+const VERSION = "2.8.0";
 
 const DEFAULT_RETRIES = 2;
 const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
@@ -440,6 +441,18 @@ export class Authsignal {
 
   public async revokeSession(request: RevokeSessionRequest): Promise<void> {
     const url = `${this.apiUrl}/sessions/revoke`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      await axios.post(url, request, config);
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async revokeUserSessions(request: RevokeUserSessionsRequest): Promise<void> {
+    const url = `${this.apiUrl}/sessions/user/revoke`;
 
     const config = this.getRequestConfig();
 

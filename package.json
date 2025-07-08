@@ -1,6 +1,6 @@
 {
   "name": "@authsignal/node",
-  "version": "2.7.3",
+  "version": "2.8.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "dist/index.d.ts",
