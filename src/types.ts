@@ -307,6 +307,7 @@ export enum VerificationMethod {
   IDVERSE = "IDVERSE",
   PALM_BIOMETRICS_RR = "PALM_BIOMETRICS_RR",
   RECOVERY_CODE = "RECOVERY_CODE",
+  DEVICE = "DEVICE",
 }
 
 export interface WebauthnCredential {
