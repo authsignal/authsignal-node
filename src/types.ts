@@ -250,6 +250,7 @@ export interface ValidateSessionRequest {
 export interface ValidateSessionResponse {
   user: {userId: string} & UserAttributes;
   expiresAt: number;
+  verificationMethod: VerificationMethod;
 }
 
 export interface RefreshSessionRequest {
