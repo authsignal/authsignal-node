@@ -168,6 +168,7 @@ export interface ValidateChallengeResponse {
 export interface ClaimChallengeRequest {
   challengeId: string;
   userId: string;
+  skipVerificationCheck?: boolean;
 }
 
 export interface ClaimChallengeResponse {
