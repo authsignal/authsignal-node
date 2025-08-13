@@ -169,6 +169,10 @@ export interface ClaimChallengeRequest {
   challengeId: string;
   userId: string;
   skipVerificationCheck?: boolean;
+  deviceId?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  custom?: CustomData;
 }
 
 export interface ClaimChallengeResponse {
@@ -310,6 +314,7 @@ export enum VerificationMethod {
   PALM_BIOMETRICS_RR = "PALM_BIOMETRICS_RR",
   RECOVERY_CODE = "RECOVERY_CODE",
   DEVICE = "DEVICE",
+  WHATSAPP = "WHATSAPP",
 }
 
 export interface WebauthnCredential {
@@ -330,7 +335,7 @@ export interface AaguidMapping {
   svgIconDark: string;
 }
 
-type CustomData = {[key: string]: string};
+type CustomData = {[key: string]: string | number | boolean};
 
 export interface UserAgent {
   ua: string;
