@@ -223,6 +223,7 @@ export interface ChallengeRequest {
 
 export interface ChallengeResponse {
   challengeId: string;
+  expiresAt: number;
 }
 
 export interface VerifyRequest {
