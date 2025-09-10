@@ -56,6 +56,7 @@ export interface UserAttributes {
   username?: string;
   displayName?: string;
   custom?: CustomData;
+  locale?: string;
 }
 
 export interface DeleteUserRequest {
@@ -219,6 +220,7 @@ export interface ChallengeRequest {
   email?: string;
   phoneNumber?: string;
   smsChannel?: SmsChannel;
+  locale?: string;
 }
 
 export interface ChallengeResponse {
