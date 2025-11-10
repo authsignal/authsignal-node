@@ -243,6 +243,7 @@ export interface VerifyResponse {
 export interface CreateSessionRequest {
   clientId: string;
   token: string;
+  action?: string;
 }
 
 export interface CreateSessionResponse {
