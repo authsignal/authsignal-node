@@ -238,6 +238,7 @@ export interface VerifyResponse {
   email?: string;
   phoneNumber?: string;
   verificationMethod?: "SMS" | "EMAIL_OTP";
+  failureReason?: VerificationFailureReason;
 }
 
 export interface CreateSessionRequest {
@@ -392,3 +393,8 @@ export type ActionOutput = any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TokenPayload = any;
+
+export enum VerificationFailureReason {
+  CODE_INVALID_OR_EXPIRED = "CODE_INVALID_OR_EXPIRED",
+  MAX_ATTEMPTS_EXCEEDED = "MAX_ATTEMPTS_EXCEEDED",
+}
