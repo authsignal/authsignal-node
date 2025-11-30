@@ -215,16 +215,23 @@ export interface GetChallengeResponse {
 }
 
 export interface ChallengeRequest {
-  verificationMethod: "SMS" | "EMAIL_OTP";
+  verificationMethod: "SMS" | "EMAIL_OTP" | "WHATSAPP";
   action: string;
+  idempotencyKey?: string;
+  userId?: string;
   email?: string;
   phoneNumber?: string;
   smsChannel?: SmsChannel;
   locale?: string;
+  deviceId?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  custom?: CustomData;
 }
 
 export interface ChallengeResponse {
   challengeId: string;
+  idempotencyKey: string;
   expiresAt: number;
 }
 
@@ -237,7 +244,7 @@ export interface VerifyResponse {
   isVerified: boolean;
   email?: string;
   phoneNumber?: string;
-  verificationMethod?: "SMS" | "EMAIL_OTP";
+  verificationMethod?: "SMS" | "EMAIL_OTP" | "WHATSAPP";
   failureReason?: VerificationFailureReason;
 }
 
