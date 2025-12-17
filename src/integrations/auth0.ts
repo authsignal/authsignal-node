@@ -1,4 +1,5 @@
-import {Authsignal, DEFAULT_API_URL} from "../authsignal";
+import {Authsignal} from "../authsignal";
+import {DEFAULT_API_URL} from "../config";
 import {UserActionState} from "../types";
 
 const DEFAULT_ACTION_NAME = "auth0-login";

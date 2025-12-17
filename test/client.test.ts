@@ -188,10 +188,13 @@ describe("authsignal client tests", () => {
     } catch (ex) {
       const isAuthsignalError = ex instanceof AuthsignalError;
 
+      if (!isAuthsignalError) {
+        throw new Error("Expected AuthsignalError to be thrown");
+      }
+
       const expectedDescription =
         "The request is unauthorized. Check that your API key and region base URL are correctly configured.";
 
-      expect(isAuthsignalError).toBeTruthy();
       expect(ex.statusCode).toEqual(401);
       expect(ex.errorCode).toEqual("unauthorized");
       expect(ex.errorDescription).toEqual(expectedDescription);
