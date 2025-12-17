@@ -26,6 +26,10 @@ describe("authsignal webhook tests", () => {
     try {
       client.webhook.constructEvent(payload, signature);
     } catch (ex) {
+      if (!(ex instanceof Error)) {
+        throw new Error("Expected Error to be thrown");
+      }
+
       expect(ex.message).toEqual("Signature format is invalid.");
     }
   });
@@ -37,6 +41,10 @@ describe("authsignal webhook tests", () => {
     try {
       client.webhook.constructEvent(payload, signature);
     } catch (ex) {
+      if (!(ex instanceof Error)) {
+        throw new Error("Expected Error to be thrown");
+      }
+
       expect(ex.message).toEqual("Timestamp is outside the tolerance zone.");
     }
   });
@@ -49,6 +57,10 @@ describe("authsignal webhook tests", () => {
     try {
       client.webhook.constructEvent(payload, signature);
     } catch (ex) {
+      if (!(ex instanceof Error)) {
+        throw new Error("Expected Error to be thrown");
+      }
+
       expect(ex.message).toEqual("Signature mismatch.");
     }
   });
