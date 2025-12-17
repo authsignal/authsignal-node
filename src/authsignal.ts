@@ -1,4 +1,4 @@
-import axios, {AxiosError} from "axios";
+import axios from "axios";
 import axiosRetry from "axios-retry";
 
 import {mapToAuthsignalError} from "./error";
@@ -44,36 +44,8 @@ import {
   RevokeUserSessionsRequest,
 } from "./types";
 import {Webhook} from "./webhook";
-
-export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
-
-const VERSION = "2.11.0";
-
-const DEFAULT_RETRIES = 2;
-const RETRY_ERROR_CODES = ["ECONNRESET", "EPIPE", "ECONNREFUSED"];
-const SAFE_HTTP_METHODS = ["GET", "HEAD", "OPTIONS"];
-
-function isRetryableAuthsignalError(error: AxiosError): boolean {
-  // Retry on connection error
-  if (!error.response) {
-    return true;
-  }
-
-  if (error.code && RETRY_ERROR_CODES.includes(error.code)) {
-    return true;
-  }
-
-  const {method} = error.request;
-  const {status} = error.response;
-
-  if (status >= 500 && status <= 599) {
-    if (method && SAFE_HTTP_METHODS.includes(method)) {
-      return true;
-    }
-  }
-
-  return false;
-}
+import {DEFAULT_API_URL, VERSION} from "./config";
+import {DEFAULT_RETRIES, isRetryableAuthsignalError} from "./retries";
 
 export class Authsignal {
   apiSecretKey: string;
