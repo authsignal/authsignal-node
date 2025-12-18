@@ -82,6 +82,7 @@ export interface TrackAttributes {
   username?: string;
   custom?: CustomData;
   challengeId?: string;
+  locale?: string;
   customDomain?: string;
 }
 
@@ -94,6 +95,7 @@ export interface TrackResponse {
   enrolledVerificationMethods?: VerificationMethod[];
   allowedVerificationMethods?: VerificationMethod[];
   defaultVerificationMethod?: VerificationMethod;
+  ruleIds?: string[];
 }
 
 export interface GetActionRequest {
