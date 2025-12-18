@@ -94,7 +94,7 @@ export enum CallConnectMessageChannel {
 export type FinishCallRequest = {
   referenceId: string;
   state: CallState;
-  userId?: string;
+  userId: string;
   payload?: Record<string, unknown>;
 };
 
