@@ -82,6 +82,7 @@ export interface TrackAttributes {
   username?: string;
   custom?: CustomData;
   challengeId?: string;
+  customDomain?: string;
 }
 
 export interface TrackResponse {
