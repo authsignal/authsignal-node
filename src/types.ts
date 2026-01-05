@@ -230,6 +230,7 @@ export interface ChallengeRequest {
   ipAddress?: string;
   userAgent?: string;
   custom?: CustomData;
+  scope?: AuthScope;
 }
 
 export interface ChallengeResponse {
@@ -407,4 +408,11 @@ export type TokenPayload = any;
 export enum VerificationFailureReason {
   CODE_INVALID_OR_EXPIRED = "CODE_INVALID_OR_EXPIRED",
   MAX_ATTEMPTS_EXCEEDED = "MAX_ATTEMPTS_EXCEEDED",
+}
+
+export enum AuthScope {
+  readAuthenticators = "read:authenticators",
+  addAuthenticators = "add:authenticators",
+  removeAuthenticators = "remove:authenticators",
+  updateAuthenticators = "update:authenticators",
 }
