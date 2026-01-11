@@ -218,8 +218,9 @@ export interface GetChallengeResponse {
 }
 
 export interface ChallengeRequest {
-  verificationMethod: "SMS" | "EMAIL_OTP" | "WHATSAPP";
-  action: string;
+  verificationMethod?: "SMS" | "EMAIL_OTP" | "WHATSAPP";
+  action?: string;
+  challengeId?: string;
   idempotencyKey?: string;
   userId?: string;
   email?: string;
