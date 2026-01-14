@@ -255,6 +255,7 @@ export interface CreateSessionRequest {
   challengeId?: string;
   token?: string;
   action?: string;
+  skipVerificationCheck?: boolean;
 }
 
 export interface CreateSessionResponse {
