@@ -173,10 +173,6 @@ export interface ClaimChallengeRequest {
   challengeId: string;
   userId: string;
   skipVerificationCheck?: boolean;
-  deviceId?: string;
-  ipAddress?: string;
-  userAgent?: string;
-  custom?: CustomData;
 }
 
 export interface ClaimChallengeResponse {
@@ -255,7 +251,9 @@ export interface VerifyResponse {
 
 export interface CreateSessionRequest {
   clientId: string;
-  token: string;
+  userId?: string;
+  challengeId?: string;
+  token?: string;
   action?: string;
 }
 
