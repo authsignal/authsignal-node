@@ -251,11 +251,8 @@ export interface VerifyResponse {
 
 export interface CreateSessionRequest {
   clientId: string;
-  userId?: string;
-  challengeId?: string;
-  token?: string;
+  token: string;
   action?: string;
-  skipVerificationCheck?: boolean;
 }
 
 export interface CreateSessionResponse {
