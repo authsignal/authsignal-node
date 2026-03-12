@@ -71,24 +71,30 @@ export class CallConnect {
 
 export type StartCallRequest = {
   referenceId: string;
-  phoneNumber: string;
+  phoneNumber?: string;
+  country?: string;
   userId?: string;
   username?: string;
   channel?: CallConnectMessageChannel;
   email?: string;
   locale?: string;
+  actionCode?: string;
 };
 
 export type StartCallResponse = {
   messageId?: string;
-  status?: string;
-  error?: string;
   channel?: CallConnectMessageChannel;
+  phoneNumber?: string;
+  email?: string;
+  error?: string;
+  errorCode?: string;
+  errorDescription?: string;
 };
 
 export enum CallConnectMessageChannel {
   "WHATSAPP" = "WHATSAPP",
   "SMS" = "SMS",
+  "EMAIL" = "EMAIL",
 }
 
 export type FinishCallRequest = {
