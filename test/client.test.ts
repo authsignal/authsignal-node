@@ -28,7 +28,7 @@ describe("authsignal client tests", () => {
       userId,
       attributes: {
         verificationMethod: VerificationMethod.SMS,
-        phoneNumber: "+6427000000",
+        phoneNumber: "+64270000000",
       },
     };
 
@@ -88,7 +88,7 @@ describe("authsignal client tests", () => {
       userId,
       attributes: {
         verificationMethod: VerificationMethod.SMS,
-        phoneNumber: "+6427000000",
+        phoneNumber: "+64270000000",
       },
     };
 
@@ -128,7 +128,7 @@ describe("authsignal client tests", () => {
       userId,
       attributes: {
         verificationMethod: VerificationMethod.SMS,
-        phoneNumber: "+6427000000",
+        phoneNumber: "+64270000000",
       },
     };
 
