@@ -166,6 +166,7 @@ export interface ValidateChallengeResponse {
   action?: string;
   idempotencyKey?: string;
   verificationMethod?: VerificationMethod;
+  veriffSessionId?: string;
   error?: string;
 }
 
