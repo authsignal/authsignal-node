@@ -12,6 +12,82 @@ export class Webhook {
   }
 
   constructEvent(payload: WebhookPayload, signature: string, tolerance: number = DEFAULT_TOLERANCE): WebhookEvent {
+    this.verifySignature(payload, signature, tolerance);
+
+    const parsedPayload = this.parsePayload(payload);
+
+    if ("records" in parsedPayload) {
+      throw new InvalidPayloadError("Payload is a batch of log events. Use constructLogEventBatch instead.");
+    }
+
+    this.validateEvent(parsedPayload, "data");
+
+    return parsedPayload as WebhookEvent;
+  }
+
+  constructLogEventBatch(
+    payload: WebhookPayload,
+    signature: string,
+    tolerance: number = DEFAULT_TOLERANCE
+  ): WebhookEventBatch {
+    this.verifySignature(payload, signature, tolerance);
+
+    const parsedPayload = this.parsePayload(payload);
+
+    if (!("records" in parsedPayload) || !Array.isArray(parsedPayload.records)) {
+      throw new InvalidPayloadError("Payload format is invalid. Expected a 'records' array.");
+    }
+
+    for (const event of parsedPayload.records) {
+      this.validateEvent(event, "record");
+    }
+
+    return parsedPayload as WebhookEventBatch;
+  }
+
+  private parsePayload(payload: WebhookPayload): Record<string, unknown> {
+    try {
+      const parsedPayload = JSON.parse(payload) as unknown;
+
+      if (!parsedPayload || typeof parsedPayload !== "object" || Array.isArray(parsedPayload)) {
+        throw new InvalidPayloadError("Payload format is invalid.");
+      }
+
+      return parsedPayload as Record<string, unknown>;
+    } catch (error) {
+      if (error instanceof InvalidPayloadError) {
+        throw error;
+      }
+
+      throw new InvalidPayloadError("Payload format is invalid.");
+    }
+  }
+
+  private validateEvent(event: unknown, contentField: "data" | "record"): void {
+    if (!event || typeof event !== "object" || Array.isArray(event)) {
+      throw new InvalidPayloadError("Payload format is invalid.");
+    }
+
+    const fields = event as Record<string, unknown>;
+
+    if (typeof fields.version !== "number" || fields.version <= 0) {
+      throw new InvalidPayloadError("Payload is missing required field 'version'.");
+    }
+
+    for (const field of ["type", "id", "source", "time", "tenantId"]) {
+      const value = fields[field];
+      if (typeof value !== "string" || value.trim().length === 0) {
+        throw new InvalidPayloadError(`Payload is missing required field '${field}'.`);
+      }
+    }
+
+    const content = fields[contentField];
+    if (!content || typeof content !== "object" || Array.isArray(content)) {
+      throw new InvalidPayloadError(`Payload is missing required field '${contentField}'.`);
+    }
+  }
+
+  private verifySignature(payload: WebhookPayload, signature: string, tolerance: number): void {
     const parsedSignature = this.parseSignature(signature);
 
     const secondsSinceEpoch = Math.round(Date.now() / 1000);
@@ -38,8 +114,6 @@ export class Webhook {
     if (!match) {
       throw new InvalidSignatureError("Signature mismatch.");
     }
-
-    return JSON.parse(payload) as WebhookEvent;
   }
 
   parseSignature(value: string): SignatureHeaderData {
@@ -85,14 +159,34 @@ export type WebhookEvent = {
   data: WebhookEventData;
 };
 
-export type WebhookEventData = Record<string, string>;
+export type WebhookEventData = Record<string, unknown>;
+
+export type WebhookLogEvent = {
+  version: number;
+  type: string;
+  id: string;
+  source: string;
+  time: string;
+  tenantId: string;
+  record: WebhookEventData;
+};
+
+export type WebhookEventBatch = {
+  records: WebhookLogEvent[];
+};
 
 interface SignatureHeaderData {
   signatures: string[];
   timestamp: number;
 }
 
-class InvalidSignatureError extends Error {
+export class InvalidSignatureError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+export class InvalidPayloadError extends Error {
   constructor(message: string) {
     super(message);
   }

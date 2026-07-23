@@ -1,22 +1,19 @@
+import {createHmac} from "crypto";
 import {test, expect, describe} from "vitest";
-import "dotenv/config";
 
 import {Authsignal} from "../src";
 
-const apiUrl = process.env.AUTHSIGNAL_API_URL;
-const apiSecretKey = process.env.AUTHSIGNAL_API_SECRET_KEY;
+const apiSecretKey = "test-secret-key";
+const client = new Authsignal({apiSecretKey, apiUrl: "https://api.authsignal.com/v1"});
 
-if (!apiUrl) {
-  console.log("AUTHSIGNAL_API_URL is undefined in env");
-  process.exit(1);
-}
+const createSignature = (payload: string, timestamp = Math.floor(Date.now() / 1000)): string => {
+  const signature = createHmac("sha256", apiSecretKey)
+    .update(`${timestamp}.${payload}`)
+    .digest("base64")
+    .replace("=", "");
 
-if (!apiSecretKey) {
-  console.log("AUTHSIGNAL_API_SECRET_KEY is undefined in env");
-  process.exit(1);
-}
-
-const client = new Authsignal({apiSecretKey, apiUrl});
+  return `t=${timestamp},v2=${signature}`;
+};
 
 describe("authsignal webhook tests", () => {
   test("test invalid signature format", async () => {
@@ -83,12 +80,7 @@ describe("authsignal webhook tests", () => {
       },
     });
 
-    // Ignore tolerance window
-    const tolerance = -1;
-
-    const signature = "t=1740016316,v2=NwFcIT68pK7g+m365Jj4euXj/ke3GSnkTpMPcRVi5q4";
-
-    const event = client.webhook.constructEvent(payload, signature, tolerance);
+    const event = client.webhook.constructEvent(payload, createSignature(payload));
 
     expect(event).toBeDefined();
 
@@ -115,14 +107,79 @@ describe("authsignal webhook tests", () => {
       },
     });
 
-    // Ignore tolerance window
-    const tolerance = -1;
+    const validSignature = createSignature(payload);
+    const signature = `${validSignature},v2=invalid_signature`;
 
-    const signature =
-      "t=1740016037,v2=zI5rg1XJtKH8dXTX9VCSwy07qTPJliXkK9ppgNjmzqw,v2=KMg8mXXGO/SmNNmcszKXI4UaEVHLc21YNWthHfispQo";
-
-    const event = client.webhook.constructEvent(payload, signature, tolerance);
+    const event = client.webhook.constructEvent(payload, signature);
 
     expect(event).toBeDefined();
+  });
+
+  test("test event with custom variables", () => {
+    const payload = JSON.stringify({
+      version: 1,
+      id: "bc1598bc-e5d6-4c69-9afb-1a6fe3469d6e",
+      source: "https://authsignal.com",
+      time: "2025-02-20T01:51:56.070Z",
+      tenantId: "7752d28e-e627-4b1b-bb81-b45d68d617bc",
+      type: "sms.created",
+      data: {
+        actionCode: "smsVerify",
+        customVariables: {
+          action_journeyType: "ForgotChangePassword",
+          retryCount: 2,
+          isRecovery: true,
+          channels: ["sms", "email"],
+        },
+      },
+    });
+
+    const event = client.webhook.constructEvent(payload, createSignature(payload));
+    const customVariables = event.data.customVariables as Record<string, unknown>;
+
+    expect(customVariables.action_journeyType).toEqual("ForgotChangePassword");
+    expect(customVariables.retryCount).toEqual(2);
+    expect(customVariables.isRecovery).toEqual(true);
+    expect(customVariables.channels).toEqual(["sms", "email"]);
+  });
+
+  test("test log event batch", () => {
+    const payload = JSON.stringify({
+      records: [
+        {
+          version: 1,
+          id: "bc1598bc-e5d6-4c69-9afb-1a6fe3469d6e",
+          source: "https://authsignal.com",
+          time: "2025-02-20T01:51:56.070Z",
+          tenantId: "7752d28e-e627-4b1b-bb81-b45d68d617bc",
+          type: "action.log_created",
+          record: {
+            userId: "b9f74d36-fcfc-4efc-87f1-3664ab5a7fb0",
+            customVariables: {journeyType: "accountRecovery"},
+          },
+        },
+      ],
+    });
+
+    const batch = client.webhook.constructLogEventBatch(payload, createSignature(payload));
+
+    expect(batch.records).toHaveLength(1);
+    expect(batch.records[0].record.customVariables).toEqual({journeyType: "accountRecovery"});
+  });
+
+  test("test log event batch passed to construct event", () => {
+    const payload = JSON.stringify({records: []});
+
+    expect(() => client.webhook.constructEvent(payload, createSignature(payload))).toThrow(
+      "Use constructLogEventBatch instead."
+    );
+  });
+
+  test("test invalid payload", () => {
+    const payload = "not-json";
+
+    expect(() => client.webhook.constructEvent(payload, createSignature(payload))).toThrow(
+      "Payload format is invalid."
+    );
   });
 });
