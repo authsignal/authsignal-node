@@ -311,6 +311,9 @@ export interface UserAuthenticator {
   email?: string;
   username?: string;
   displayName?: string;
+  deviceName?: string;
+  erroredAt?: string;
+  errorCode?: string;
   webauthnCredential?: WebauthnCredential;
 }
 
