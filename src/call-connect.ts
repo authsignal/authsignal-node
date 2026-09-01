@@ -1,25 +1,27 @@
-import axios from "axios";
+import axios, {AxiosInstance} from "axios";
 import axiosRetry from "axios-retry";
 
 import {mapToAuthsignalError} from "./error";
 import {AuthsignalConstructor} from "./types";
 import {VERSION} from "./config";
-import {DEFAULT_RETRIES, isRetryableAuthsignalError} from "./retries";
+import {DEFAULT_RETRIES, DEFAULT_TIMEOUT, isRetryableAuthsignalError} from "./retries";
 
 const DEFAULT_API_URL = "https://us-connect.authsignal.com";
 
 export class CallConnect {
   apiSecretKey: string;
   apiUrl: string;
+  private client: AxiosInstance;
 
-  constructor({apiSecretKey, apiUrl, retries}: AuthsignalConstructor) {
+  constructor({apiSecretKey, apiUrl, retries, timeout}: AuthsignalConstructor) {
     this.apiSecretKey = apiSecretKey;
     this.apiUrl = apiUrl ?? DEFAULT_API_URL;
+    this.client = axios.create({timeout: timeout ?? DEFAULT_TIMEOUT});
 
     const axiosRetries = retries ?? DEFAULT_RETRIES;
 
     if (axiosRetries > 0) {
-      axiosRetry(axios, {
+      axiosRetry(this.client, {
         retries: axiosRetries,
         retryDelay: axiosRetry.exponentialDelay,
         retryCondition: isRetryableAuthsignalError,
@@ -33,7 +35,7 @@ export class CallConnect {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<StartCallResponse>(url, request, config);
+      const response = await this.client.post<StartCallResponse>(url, request, config);
 
       return response.data;
     } catch (error) {
@@ -47,7 +49,7 @@ export class CallConnect {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<FinishCallResponse>(url, request, config);
+      const response = await this.client.post<FinishCallResponse>(url, request, config);
 
       return response.data;
     } catch (error) {

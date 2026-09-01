@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosInstance} from "axios";
 import axiosRetry from "axios-retry";
 
 import {mapToAuthsignalError} from "./error";
@@ -45,21 +45,23 @@ import {
 } from "./types";
 import {Webhook} from "./webhook";
 import {DEFAULT_API_URL, VERSION} from "./config";
-import {DEFAULT_RETRIES, isRetryableAuthsignalError} from "./retries";
+import {DEFAULT_RETRIES, DEFAULT_TIMEOUT, isRetryableAuthsignalError} from "./retries";
 
 export class Authsignal {
   apiSecretKey: string;
   apiUrl: string;
   webhook: Webhook;
+  private client: AxiosInstance;
 
-  constructor({apiSecretKey, apiUrl, retries}: AuthsignalConstructor) {
+  constructor({apiSecretKey, apiUrl, retries, timeout}: AuthsignalConstructor) {
     this.apiSecretKey = apiSecretKey;
     this.apiUrl = apiUrl ?? DEFAULT_API_URL;
+    this.client = axios.create({timeout: timeout ?? DEFAULT_TIMEOUT});
 
     const axiosRetries = retries ?? DEFAULT_RETRIES;
 
     if (axiosRetries > 0) {
-      axiosRetry(axios, {
+      axiosRetry(this.client, {
         retries: axiosRetries,
         retryDelay: axiosRetry.exponentialDelay,
         retryCondition: isRetryableAuthsignalError,
@@ -77,7 +79,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.get<GetUserResponse>(url, config);
+      const response = await this.client.get<GetUserResponse>(url, config);
 
       return response.data;
     } catch (error) {
@@ -117,7 +119,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.get<QueryUsersResponse>(url.toString(), config);
+      const response = await this.client.get<QueryUsersResponse>(url.toString(), config);
 
       return response.data;
     } catch (error) {
@@ -133,7 +135,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.patch<UserAttributes>(url, attributes, config);
+      const response = await this.client.patch<UserAttributes>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -149,7 +151,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      await axios.delete(url, config);
+      await this.client.delete(url, config);
     } catch (error) {
       throw mapToAuthsignalError(error);
     }
@@ -163,7 +165,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.get<UserAuthenticator[]>(url, config);
+      const response = await this.client.get<UserAuthenticator[]>(url, config);
 
       return response.data;
     } catch (error) {
@@ -181,7 +183,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<EnrollVerifiedAuthenticatorResponse>(url, attributes, config);
+      const response = await this.client.post<EnrollVerifiedAuthenticatorResponse>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -197,7 +199,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      await axios.delete(url, config);
+      await this.client.delete(url, config);
     } catch (error) {
       throw mapToAuthsignalError(error);
     }
@@ -208,10 +210,10 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/actions/${action}`;
 
-    const config = this.getRequestConfig();
+    const config = this.getRequestConfig(attributes.idempotencyKey);
 
     try {
-      const response = await axios.post<TrackResponse>(url, attributes, config);
+      const response = await this.client.post<TrackResponse>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -225,7 +227,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<ValidateChallengeRawResponse>(url, request, config);
+      const response = await this.client.post<ValidateChallengeRawResponse>(url, request, config);
 
       const {actionCode: action, ...rest} = response.data;
 
@@ -241,7 +243,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<ClaimChallengeResponse>(url, request, config);
+      const response = await this.client.post<ClaimChallengeResponse>(url, request, config);
 
       return response.data;
     } catch (error) {
@@ -257,7 +259,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.get<GetActionResponse>(url, config);
+      const response = await this.client.get<GetActionResponse>(url, config);
 
       return response.data;
     } catch (error) {
@@ -285,7 +287,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.get<QueryUserActionsResponse>(url.toString(), config);
+      const response = await this.client.get<QueryUserActionsResponse>(url.toString(), config);
 
       return response.data;
     } catch (error) {
@@ -298,10 +300,10 @@ export class Authsignal {
 
     const url = `${this.apiUrl}/users/${userId}/actions/${action}/${idempotencyKey}`;
 
-    const config = this.getRequestConfig();
+    const config = this.getRequestConfig(idempotencyKey);
 
     try {
-      const response = await axios.patch<ActionAttributes>(url, attributes, config);
+      const response = await this.client.patch<ActionAttributes>(url, attributes, config);
 
       return response.data;
     } catch (error) {
@@ -312,10 +314,10 @@ export class Authsignal {
   public async challenge(request: ChallengeRequest): Promise<ChallengeResponse> {
     const url = `${this.apiUrl}/challenge`;
 
-    const config = this.getRequestConfig();
+    const config = this.getRequestConfig(request.idempotencyKey);
 
     try {
-      const response = await axios.post<ChallengeResponse>(url, request, config);
+      const response = await this.client.post<ChallengeResponse>(url, request, config);
 
       return response.data;
     } catch (error) {
@@ -329,7 +331,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<VerifyResponse>(url, request, config);
+      const response = await this.client.post<VerifyResponse>(url, request, config);
 
       return response.data;
     } catch (error) {
@@ -361,7 +363,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.get<GetChallengeResponse>(url.toString(), config);
+      const response = await this.client.get<GetChallengeResponse>(url.toString(), config);
 
       return response.data;
     } catch (error) {
@@ -375,7 +377,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<CreateSessionResponse>(url, request, config);
+      const response = await this.client.post<CreateSessionResponse>(url, request, config);
 
       return response.data;
     } catch (error) {
@@ -389,7 +391,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<ValidateSessionResponse>(url, request, config);
+      const response = await this.client.post<ValidateSessionResponse>(url, request, config);
 
       return response.data;
     } catch (error) {
@@ -403,7 +405,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      const response = await axios.post<RefreshSessionResponse>(url, request, config);
+      const response = await this.client.post<RefreshSessionResponse>(url, request, config);
 
       return response.data;
     } catch (error) {
@@ -417,7 +419,7 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      await axios.post(url, request, config);
+      await this.client.post(url, request, config);
     } catch (error) {
       throw mapToAuthsignalError(error);
     }
@@ -429,13 +431,13 @@ export class Authsignal {
     const config = this.getRequestConfig();
 
     try {
-      await axios.post(url, request, config);
+      await this.client.post(url, request, config);
     } catch (error) {
       throw mapToAuthsignalError(error);
     }
   }
 
-  private getRequestConfig() {
+  private getRequestConfig(idempotencyKey?: string) {
     return {
       auth: {
         username: this.apiSecretKey,
@@ -444,6 +446,7 @@ export class Authsignal {
       headers: {
         "X-Authsignal-Version": VERSION,
         "User-Agent": "authsignal-node",
+        ...(idempotencyKey ? {"Idempotency-Key": idempotencyKey} : {}),
       },
     };
   }
