@@ -73,7 +73,7 @@ export type FlowUserAuthenticator = {
   email?: string;
   phoneNumber?: string;
   username?: string;
-  displayName: string;
+  displayName?: string;
 };
 
 export type AuthenticationSession = {
