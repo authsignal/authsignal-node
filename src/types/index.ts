@@ -1,3 +1,5 @@
+export * from "./flows";
+
 export interface AuthsignalConstructor {
   apiSecretKey: string;
   apiUrl?: string;
@@ -352,7 +354,7 @@ export interface AaguidMapping {
   svgIconDark: string;
 }
 
-type CustomData = {[key: string]: string | number | boolean};
+export type CustomData = {[key: string]: string | number | boolean};
 
 export interface UserAgent {
   ua: string;

@@ -42,6 +42,10 @@ import {
   RefreshSessionResponse,
   RevokeSessionRequest,
   RevokeUserSessionsRequest,
+  StartFlowRequest,
+  StartFlowResponse,
+  VerifyFlowRequest,
+  VerifyFlowResponse,
 } from "./types";
 import {Webhook} from "./webhook";
 import {DEFAULT_API_URL, VERSION} from "./config";
@@ -430,6 +434,34 @@ export class Authsignal {
 
     try {
       await axios.post(url, request, config);
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async startFlow(request: StartFlowRequest): Promise<StartFlowResponse> {
+    const url = `${this.apiUrl}/flows`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<StartFlowResponse>(url, request, config);
+
+      return response.data;
+    } catch (error) {
+      throw mapToAuthsignalError(error);
+    }
+  }
+
+  public async verifyFlow(request: VerifyFlowRequest): Promise<VerifyFlowResponse> {
+    const url = `${this.apiUrl}/flows/verify`;
+
+    const config = this.getRequestConfig();
+
+    try {
+      const response = await axios.post<VerifyFlowResponse>(url, request, config);
+
+      return response.data;
     } catch (error) {
       throw mapToAuthsignalError(error);
     }
