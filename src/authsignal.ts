@@ -50,15 +50,22 @@ import {
 import {Webhook} from "./webhook";
 import {DEFAULT_API_URL, VERSION} from "./config";
 import {DEFAULT_RETRIES, isRetryableAuthsignalError} from "./retries";
+import {AuthsignalFlowsEmail} from "./flows/email";
+import {AuthsignalFlowsSms} from "./flows/sms";
+import {AuthsignalFlowsWhatsapp} from "./flows/whatsapp";
 
 export class Authsignal {
   apiSecretKey: string;
   apiUrl: string;
   webhook: Webhook;
 
-  constructor({apiSecretKey, apiUrl, retries}: AuthsignalConstructor) {
+  email: AuthsignalFlowsEmail;
+  sms: AuthsignalFlowsSms;
+  whatsapp: AuthsignalFlowsWhatsapp;
+
+  constructor({apiSecretKey, apiUrl = DEFAULT_API_URL, retries}: AuthsignalConstructor) {
     this.apiSecretKey = apiSecretKey;
-    this.apiUrl = apiUrl ?? DEFAULT_API_URL;
+    this.apiUrl = apiUrl;
 
     const axiosRetries = retries ?? DEFAULT_RETRIES;
 
@@ -71,6 +78,10 @@ export class Authsignal {
     }
 
     this.webhook = new Webhook(apiSecretKey);
+
+    this.email = new AuthsignalFlowsEmail(apiSecretKey, apiUrl);
+    this.sms = new AuthsignalFlowsSms(apiSecretKey, apiUrl);
+    this.whatsapp = new AuthsignalFlowsWhatsapp(apiSecretKey, apiUrl);
   }
 
   public async getUser(request: GetUserRequest): Promise<GetUserResponse> {

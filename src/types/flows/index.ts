@@ -2,7 +2,7 @@ import type {CustomData, VerificationMethod} from "../index";
 
 export interface StartFlowRequest {
   actionCode: string;
-  user: UserLookup;
+  user?: UserLookup;
   attributes?: ChallengeAttributes;
   redirectUrl?: string;
 }
@@ -86,3 +86,33 @@ export enum FlowState {
   CHALLENGE_SUCCEEDED = "CHALLENGE_SUCCEEDED",
   CHALLENGE_FAILED = "CHALLENGE_FAILED",
 }
+
+export type EmailChallengeRequest = {
+  challengeToken: string;
+  email?: string;
+};
+
+export type SmsChallengeRequest = {
+  challengeToken: string;
+  phoneNumber?: string;
+};
+
+export type WhatsappChallengeRequest = {
+  challengeToken: string;
+  phoneNumber?: string;
+};
+
+export type OtpChallengeResponse = {
+  retryAfterSeconds?: number;
+};
+
+export type OtpVerifyRequest = {
+  challengeToken: string;
+  verificationCode: string;
+};
+
+export type OtpVerifyResponse = {
+  action: FlowAction;
+  challengeToken: string;
+  user: FlowUser;
+};
