@@ -5,6 +5,7 @@ export interface StartFlowRequest {
   user?: UserLookup;
   attributes?: ChallengeAttributes;
   redirectUrl?: string;
+  clientId?: string;
 }
 
 export interface StartFlowResponse {
