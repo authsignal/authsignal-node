@@ -1,3 +1,3 @@
 export const DEFAULT_API_URL = "https://api.authsignal.com/v1";
 
-export const VERSION = "3.2.1";
+export const VERSION = "3.2.2";
