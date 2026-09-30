@@ -61,10 +61,7 @@ export type ChallengeAttributes = {
 
 export type FlowUser = {
   userId: string;
-  email?: string;
-  phoneNumber?: string;
   username?: string;
-  displayName?: string;
   authenticators: FlowUserAuthenticator[];
 };
 
